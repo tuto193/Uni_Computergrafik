@@ -165,8 +165,9 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		for( var i = -1; i < 1; i += 0.1 ) {
 			for(var j = -1; j < 1; j += 0.1 ) {
 				for(var k = -1; k < 1; k += 0.1 ) {
-					var newPoint = new Point3D( j, k, l, i);
-					pointarray.push( newPoint.dehomogen() );
+					var newPoint = new Point3D( j, k, l, 1);
+                    newPoint.dehomogen();
+					pointarray.push( newPoint );
 				}
 			}
 		}
@@ -188,6 +189,25 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
 // BEGIN AUFGABE b
 
+        // Rotation Matrix (X)
+        var rotXMatrix = new Matrix4D(1, 0, 0, 0,
+                                      0, Math.cos(rotX), -Math.sin(rotX), 0,
+                                      0, Math.sin(rotX), Math.cos(rotX), 0,
+                                      0, 0, 0, 1 );
+        // Rotation Matrix (Y)
+        var rotYMatrix = new Matrix4D(Math.cos(rotY), 0, Math.sin(rotY), 0,
+                                      0, 1, 0, 0,
+                                      -Math.sin(rotY), 0, Math.cos(rotY), 0,
+                                      0, 0, 0, 1);
+
+        // Rotation Matrix (Z)
+        var rotZMatrix = new Matrix4D( Math.cos(rotZ), -Math.sin(rotZ), 0, 0,
+                                       Math.sin(rotZ), Math.cos(rotZ), 0, 0,
+                                       0, 0, 1, 0,
+                                       0, 0, 0, 1);
+
+        // We update then our normal Transform Matrix
+        transMat = rotXMatrix.mulMat( rotYMatrix.mulMat( rotZMatrix ) );
 // END AUFGABE b
 
         var pointsTrans = [];
