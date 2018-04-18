@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;" 
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;"
     onmousedown="mouse_action(event, 1)" onmouseup="mouse_action(event, -1)"
     onmousemove="mouse_action(event, 0)">
 Your browser does not support the HTML5 canvas tag.</canvas>
@@ -35,7 +35,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 <p>Rotation Z: <span id="rotValueZ"></span></p>
     <input type="range" min="-180" max="180" value="0" class="slider" id="rotZ">
 </div>
-    
+
 <div class="slidecontainer">
 <p>Camera Z Position: <span id="camPosZ"></span></p>
     <input type="range" min="100" max="1000" value="300" class="slider" id="camZ">
@@ -78,7 +78,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             c.y = this.z * v.x - this.x * v.z;
             c.z = this.x * v.y - this.y * v.x;
             return c;
-        }   
+        }
 
         // normalize vector
         this.normalize = function() {
@@ -145,7 +145,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             p.z = pIn.x * this.xz + pIn.y * this.yz + pIn.z * this.zz + pIn.w * this.wz;
             p.w = pIn.x * this.xw + pIn.y * this.yw + pIn.z * this.zw + pIn.w * this.ww;
             return p;
-        }   
+        }
     }
 
 
@@ -162,7 +162,14 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     var pointarray = [];
     function createPoints () {
 // BEGIN AUFGABE a
-
+		for( var i = -1; i < 1; i += 0.1 ) {
+			for(var j = -1; j < 1; j += 0.1 ) {
+				for(var k = -1; k < 1; k += 0.1 ) {
+					var newPoint = new Point3D( j, k, l, i);
+					pointarray.push( newPoint.dehomogen() );
+				}
+			}
+		}
 // END AUFGABE a
     }
 
@@ -173,38 +180,38 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     var camZ = 3;
     // transform array of points
     function transformPoints (pointarray) {
-        
+
         var transMat = new Matrix4D(1,0,0,0,
                                     0,1,0,0,
                                     0,0,1,0,
                                     0,0,0,1);
-        
+
 // BEGIN AUFGABE b
-    
+
 // END AUFGABE b
-        
+
         var pointsTrans = [];
         for (var i = 0; i < pointarray.length; i++) {
             var point = pointarray[i];
             var pointTrans = transMat.mulVec(point);
             pointsTrans.push(pointTrans);
         }
-        
+
         return pointsTrans;
     }
 
 
     // project array of points
-    function projectPoints (pointarray) { 
+    function projectPoints (pointarray) {
         var projMat = new Matrix4D(1,0,0,0,
                                    0,1,0,0,
                                    0,0,0,0,
                                    0,0,0,1);
-        
+
         var pointsProj = [];
-        
+
 // BEGINN AUFGABE c
-                
+
 // END AUFGABE c
 
         return pointsProj;
@@ -228,7 +235,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var pointsProj = projectPoints(pointsTrans);
         drawPoints(pointsProj);
     }
-        
+
 
     // mouse funcionality
     var mouseDown = false;
@@ -250,7 +257,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             // check if mouse movement is at least one pixel of canvas
             if ((mouseX != mouseXOld) || (mouseY != mouseYOld)) {
                 var x1 = mouseXOld - 0.5*size;
-                var y1 = mouseYOld - 0.5*size; 
+                var y1 = mouseYOld - 0.5*size;
                 var x2 = mouseX - 0.5*size;
                 var y2 = mouseY - 0.5*size;
 // BEGIN BONUS
@@ -299,10 +306,10 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     }
 
 
-    //set correct sizes 
+    //set correct sizes
     function setSizes () {
-        document.getElementById("myCanvas").setAttribute("width", size); 
-        document.getElementById("myCanvas").setAttribute("height", size); 
+        document.getElementById("myCanvas").setAttribute("width", size);
+        document.getElementById("myCanvas").setAttribute("height", size);
     }
 
 
@@ -311,7 +318,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     createPoints();
     updateCanvas();
 
-</script> 
+</script>
 
 </body>
 </html>
