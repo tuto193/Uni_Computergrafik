@@ -198,7 +198,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var rotYMatrix = new Matrix4D(Math.cos(rotY), 0, Math.sin(rotY), 0,
                                       0, 1, 0, 0,
                                       -Math.sin(rotY), 0, Math.cos(rotY), 0,
-                                      0, 0, 0, 1);
+                                    0, 0, 0, 1);
 
         // Rotation Matrix (Z)
         var rotZMatrix = new Matrix4D( Math.cos(rotZ), -Math.sin(rotZ), 0, 0,
@@ -208,6 +208,26 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
         // We update then our normal Transform Matrix
         transMat = rotXMatrix.mulMat( rotYMatrix.mulMat( rotZMatrix ) );
+
+        // Look-At Matrix!
+        // Camera, Direction, Up, Right
+        // Camera Point (as Vector, so we can operate)
+        var cPoint = new Vector3D( 0, 0, camZ, 1 ); 
+
+        // D-Vector
+        var dVector = new Vector3D( 0, 0, -1, 0 ).normalize;
+
+        // U-Vector
+        var uVector = new Vector3D( 0, 1, 0, 0 ).normalize;
+
+        // R-Vector
+        var rVector = new Vector3D( 1, 0, 0, 0 ).normalize;
+
+        // Look-At Matrix (too lazy to write Vector.attribute...)
+        var lookAtMatrix = new Matrix4D( 1, 0, 0, -rVector.dot(cPoint), 
+                                         0, 1, 0, -uVector.dot(cPoint), 
+                                         0, 0, 1, dVector.dot(cPoint),
+                                         0, 0, 0, 1 );
 // END AUFGABE b
 
         var pointsTrans = [];
