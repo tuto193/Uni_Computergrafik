@@ -165,8 +165,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		for( var i = -1; i < 1; i += 0.1 ) {
 			for(var j = -1; j < 1; j += 0.1 ) {
 				for(var k = -1; k < 1; k += 0.1 ) {
-					var newPoint = new Point3D( j, k, l, 1);
-                    pointarray.push( newPoint );
+					var newPoint = new Point3D( j, i, k, 1);
+					pointarray.push( newPoint.dehomogen() );
 				}
 			}
 		}
@@ -188,46 +188,47 @@ Your browser does not support the HTML5 canvas tag.</canvas>
                                     0,0,0,1);
 
 // BEGIN AUFGABE b
+		// Here we will make the angles into radians!
+		cosX = Math.cos( (Math.PI/180) * rotX );
+		cosY = Math.cos( (Math.PI/180) * rotY );
+		cosZ = Math.cos( (Math.PI/180) * rotZ );
+		sinX = Math.sin( (Math.PI/180) * rotX );
+		sinY = Math.sin( (Math.PI/180) * rotY );
+		sinZ = Math.sin( (Math.PI/180) * rotZ );
 
-        // Rotation Matrix (X)
-        var rotXMatrix = new Matrix4D(1, 0, 0, 0,
-                                      0, Math.cos(rotX), -Math.sin(rotX), 0,
-                                      0, Math.sin(rotX), Math.cos(rotX), 0,
-                                      0, 0, 0, 1 );
-        // Rotation Matrix (Y)
-        var rotYMatrix = new Matrix4D(Math.cos(rotY), 0, Math.sin(rotY), 0,
-                                      0, 1, 0, 0,
-                                      -Math.sin(rotY), 0, Math.cos(rotY), 0,
-                                    0, 0, 0, 1);
+		// Now the matrices
+		var rotMatrixX = new Matrix4D( 1, 0, 0, 0,
+									   0, cosX, -sinX, 0,
+								   	   0, sinX, cosX, 0,
+								   	   0, 0, 0, 1);
+		  	var rotMatrixY = new Matrix4D( cosY, 0, sinY, 0,
+									   0, 1, 0, 0,
+								   	   -sinY, 0, cosY, 0,
+								   	   0, 0, 0, 1);
+	    var rotMatrixZ = new Matrix4D( cosZ, -sinZ, 0, 0,
+		   							   sinZ, cosZ, 0, 0,
+		   							   0, 0, 1, 0,
+		   							   0, 0, 0, 1);
 
-        // Rotation Matrix (Z)
-        var rotZMatrix = new Matrix4D( Math.cos(rotZ), -Math.sin(rotZ), 0, 0,
-                                       Math.sin(rotZ), Math.cos(rotZ), 0, 0,
-                                       0, 0, 1, 0,
-                                       0, 0, 0, 1);
+		// TRAAAAAAAAAANSMAAAAAAAAAAAT
+		// Our final Rotation Matrix!!!!!
+		transMat = rotMatrixX.mulMat( rotMatrixY.mulMat( rotMatrixZ ) );
 
-        // We update then our normal Transform Matrix
-        transMat = rotXMatrix.mulMat( rotYMatrix.mulMat( rotZMatrix ) );
+		// Now the LookAtMatrix
+		var cCamera = new Vector3D( 0, 0, camZ, 1 );
+		var rVec = new Vector3D( 1, 0, 0, 0 );
+		var uVec = new Vector3D( 0, 1, 0, 0 );
+		var dVec = new Vector3D( 0, 0, -1, 0 );
 
-        // Look-At Matrix!
-        // Camera, Direction, Up, Right
-        // Camera Point (as Vector, so we can operate)
-        var cPoint = new Vector3D( 0, 0, camZ, 1 );
-
-        // D-Vector
-        var dVector = new Vector3D( 0, 0, -1, 0 ).normalize;
-
-        // U-Vector
-        var uVector = new Vector3D( 0, 1, 0, 0 ).normalize;
-
-        // R-Vector
-        var rVector = new Vector3D( 1, 0, 0, 0 ).normalize;
-
-        // Look-At Matrix (too lazy to write Vector.attribute...)
-        var lookAtMatrix = new Matrix4D( 1, 0, 0, -rVector.dot(cPoint),
-                                         0, 1, 0, -uVector.dot(cPoint),
-                                         0, 0, 1, dVector.dot(cPoint),
-                                         0, 0, 0, 1 );
+		var rTc = rVec.dot( cCamera );
+		var uTc = uVec.dot( cCamera );
+		var dTc = dVec.dot( cCamera );
+		//The LookAtMatrix
+		var LookAtMatrix = new Matrix4D(1, 0, 0, -rTc,
+										0, 1, 0, -uTc,
+									    0, 0, 1, dTc,
+										0, 0, 0, 1 );
+		transMat = transMat.mulMat( LookAtMatrix );
 // END AUFGABE b
 
         var pointsTrans = [];
@@ -249,13 +250,13 @@ Your browser does not support the HTML5 canvas tag.</canvas>
                                    0,0,0,1);
 
         var pointsProj = [];
-		//for( var i = 0; i < pointarray.length; i++ ) {
-		//	pointsProj[i] = pointarray[i];
-		//}
+
 // BEGINN AUFGABE c
 
 // END AUFGABE c
-
+		for(var i = 0; i < pointarray.length; i++ ) {
+			pointsProj.push(pointarray[i]);
+		}
         return pointsProj;
     }
 
