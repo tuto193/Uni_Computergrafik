@@ -166,11 +166,11 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 			for(var j = -1; j < 1; j += 0.1 ) {
 				for(var k = -1; k < 1; k += 0.1 ) {
 					var newPoint = new Point3D( j, k, l, 1);
-                    newPoint.dehomogen();
-					pointarray.push( newPoint );
+                    pointarray.push( newPoint );
 				}
 			}
 		}
+		return pointarray;
 // END AUFGABE a
     }
 
@@ -212,7 +212,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         // Look-At Matrix!
         // Camera, Direction, Up, Right
         // Camera Point (as Vector, so we can operate)
-        var cPoint = new Vector3D( 0, 0, camZ, 1 ); 
+        var cPoint = new Vector3D( 0, 0, camZ, 1 );
 
         // D-Vector
         var dVector = new Vector3D( 0, 0, -1, 0 ).normalize;
@@ -224,8 +224,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var rVector = new Vector3D( 1, 0, 0, 0 ).normalize;
 
         // Look-At Matrix (too lazy to write Vector.attribute...)
-        var lookAtMatrix = new Matrix4D( 1, 0, 0, -rVector.dot(cPoint), 
-                                         0, 1, 0, -uVector.dot(cPoint), 
+        var lookAtMatrix = new Matrix4D( 1, 0, 0, -rVector.dot(cPoint),
+                                         0, 1, 0, -uVector.dot(cPoint),
                                          0, 0, 1, dVector.dot(cPoint),
                                          0, 0, 0, 1 );
 // END AUFGABE b
@@ -249,7 +249,9 @@ Your browser does not support the HTML5 canvas tag.</canvas>
                                    0,0,0,1);
 
         var pointsProj = [];
-
+		//for( var i = 0; i < pointarray.length; i++ ) {
+		//	pointsProj[i] = pointarray[i];
+		//}
 // BEGINN AUFGABE c
 
 // END AUFGABE c
