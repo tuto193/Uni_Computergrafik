@@ -166,7 +166,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 			for(var j = -1; j < 1; j += 0.1 ) {
 				for(var k = -1; k < 1; k += 0.1 ) {
 					var newPoint = new Point3D( j, i, k, 1);
-					pointarray.push( newPoint.dehomogen() );
+					pointarray.push( newPoint );
 				}
 			}
 		}
@@ -246,8 +246,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     function projectPoints (pointarray) {
         var projMat = new Matrix4D(1,0,0,0,
                                    0,1,0,0,
-                                   0,0,-1,0,
-                                   0,0, 1,0);
+                                   0,0,1,0,
+                                   0,0,-1,0);
 
         var pointsProj = [];
 
