@@ -201,7 +201,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 									   0, cosX, -sinX, 0,
 								   	   0, sinX, cosX, 0,
 								   	   0, 0, 0, 1);
-		  	var rotMatrixY = new Matrix4D( cosY, 0, sinY, 0,
+		var rotMatrixY = new Matrix4D( cosY, 0, sinY, 0,
 									   0, 1, 0, 0,
 								   	   -sinY, 0, cosY, 0,
 								   	   0, 0, 0, 1);
@@ -211,8 +211,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		   							   0, 0, 0, 1);
 
 		// TRAAAAAAAAAANSMAAAAAAAAAAAT
-		// Our final Rotation Matrix!!!!!
-		transMat = rotMatrixX.mulMat( rotMatrixY.mulMat( rotMatrixZ ) );
+		// Our final Rotation Matrix!
+		transMat = rotMatrixZ.mulMat( rotMatrixY.mulMat( rotMatrixX ) );
 
 		// Now the LookAtMatrix
 		var cCamera = new Vector3D( 0, 0, camZ, 1 );
@@ -228,7 +228,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 										0, 1, 0, -uTc,
 									    0, 0, 1, dTc,
 										0, 0, 0, 1 );
-		transMat = transMat.mulMat( LookAtMatrix );
+		transMat = LookAtMatrix.mulMat( transMat );
 // END AUFGABE b
 
         var pointsTrans = [];
@@ -246,16 +246,22 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     function projectPoints (pointarray) {
         var projMat = new Matrix4D(1,0,0,0,
                                    0,1,0,0,
-                                   0,0,0,0,
-                                   0,0,0,1);
+                                   0,0,-1,0,
+                                   0,0, 1,0);
 
         var pointsProj = [];
 
 // BEGINN AUFGABE c
+		var scalMatrix = new Matrix4D(size/3, 0, 0, 0,
+									  0, size/3, 0, 0,
+								  	  0, 0, 1, 0,
+								      0, 0, 0, 1 );
+		scalMatrix = projMat.mulMat( scalMatrix );
 
 // END AUFGABE c
 		for(var i = 0; i < pointarray.length; i++ ) {
-			pointsProj.push(pointarray[i]);
+			var heteroPoint = scalMatrix.mulVec( pointarray[i] );
+			pointsProj.push( heteroPoint.dehomogen() );
 		}
         return pointsProj;
     }
