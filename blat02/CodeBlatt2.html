@@ -162,6 +162,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
     var pointarray = [];
     function createPoints () {
 // BEGIN AUFGABE a
+        // Wir erzeugen eine aus Punkten bestehende Würfel
 		for( var i = -1; i < 1; i += 0.1 ) {
 			for(var j = -1; j < 1; j += 0.1 ) {
 				for(var k = -1; k < 1; k += 0.1 ) {
@@ -189,6 +190,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
 // BEGIN AUFGABE b
 		// Here we will make the angles into radians!
+        // Die cos-/ und sin-Werte werden hier erzeugt
 		cosX = Math.cos( (Math.PI/180) * rotX );
 		cosY = Math.cos( (Math.PI/180) * rotY );
 		cosZ = Math.cos( (Math.PI/180) * rotZ );
@@ -197,6 +199,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		sinZ = Math.sin( (Math.PI/180) * rotZ );
 
 		// Now the matrices
+        // Hier sind die Rotation-Matrixen jeder Achse.
 		var rotMatrixX = new Matrix4D( 1, 0, 0, 0,
 									   0, cosX, -sinX, 0,
 								   	   0, sinX, cosX, 0,
@@ -210,11 +213,11 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		   							   0, 0, 1, 0,
 		   							   0, 0, 0, 1);
 
-		// TRAAAAAAAAAANSMAAAAAAAAAAAT
-		// Our final Rotation Matrix!
+        // Wir ändern unsere Transformation-Matrix
 		transMat = rotMatrixZ.mulMat( rotMatrixY.mulMat( rotMatrixX ) );
-
-		// Now the LookAtMatrix
+        
+    	////// Jetzt die LookAtMatrix
+        // Der Camerapunkt, und die right-/, up- und direction-Vektoren
 		var cCamera = new Vector3D( 0, 0, camZ, 1 );
 		var rVec = new Vector3D( 1, 0, 0, 0 );
 		var uVec = new Vector3D( 0, 1, 0, 0 );
@@ -223,11 +226,12 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 		var rTc = rVec.dot( cCamera );
 		var uTc = uVec.dot( cCamera );
 		var dTc = dVec.dot( cCamera );
-		//The LookAtMatrix
+        // Die finalle Look-At-Matrix
 		var LookAtMatrix = new Matrix4D(1, 0, 0, -rTc,
 										0, 1, 0, -uTc,
 									    0, 0, 1, dTc,
 										0, 0, 0, 1 );
+        // Wir ädern unsere Transformation-Matrix wider
 		transMat = LookAtMatrix.mulMat( transMat );
 // END AUFGABE b
 
@@ -244,6 +248,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 
     // project array of points
     function projectPoints (pointarray) {
+        // Die projMatr wird hier in eine perspektivisch projMatrix. (4,3 muss -1 sein)
         var projMat = new Matrix4D(1,0,0,0,
                                    0,1,0,0,
                                    0,0,1,0,
@@ -252,13 +257,17 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         var pointsProj = [];
 
 // BEGINN AUFGABE c
+        // Wir weisen der scalMatrix die richtigen Werte zu.
 		var scalMatrix = new Matrix4D(size/3, 0, 0, 0,
 									  0, size/3, 0, 0,
 								  	  0, 0, 1, 0,
 								      0, 0, 0, 1 );
+        // Und multiplizieren sie mit der projMat
 		scalMatrix = projMat.mulMat( scalMatrix );
 
 // END AUFGABE c
+        // Die Punkte werden hier mit der finallen Matrix multipliziert
+        // dehomogenisiert und in unser poitsProj rein gepushed.
 		for(var i = 0; i < pointarray.length; i++ ) {
 			var heteroPoint = scalMatrix.mulVec( pointarray[i] );
 			pointsProj.push( heteroPoint.dehomogen() );
