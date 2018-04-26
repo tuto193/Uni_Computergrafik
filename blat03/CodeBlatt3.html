@@ -287,7 +287,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var color2 = 127;
         var color3 = 127;
         // AXis A D F and G
-        var color = [color1, color2, color3];
+        this.color = [color1, color2, color3];
         // Dreiecke
         var triangle1 = new Triangle3D( pointA, pointB, pointC, color );
         var triangle2 = new Triangle3D( pointA, pointB, pointE, color );
@@ -362,7 +362,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         return trianglesProj;
     }
 
-    function geradenGleichung( pointA = new Point3D(), pointB = new Point3D() ) {
+    function geradenGleichung( pointA=new Point3D(), pointB=new Point3D ) {
         this.steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
         var beginX = Math.min( pointA.x, pointB.x );
         var endX = Math.max( pointA.x, pointB.x );
@@ -370,8 +370,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var endY = Math.max( pointA.y, pointB.y );
         this.yAbschnitt = beginY - (beginX * steigung );
 
-        function schneidetsich( x, y ) {
-            if( y == x*this.steigung + yAbschnitt ) {
+        this.schneidetsich = function( x, y ) {
+            if( y == (x*this.steigung + this.yAbschnitt) ) {
                 return true;
             } else {
                 return false;
@@ -383,6 +383,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var A = (triangle.A).dehomogen();
         var B = (triangle.B).dehomogen();
         var C = (triangle.C).dehomogen();
+        var color = triangle.color;
 // BEGIN TEST CODE  
         drawPoint(A.x, A.y);
         drawPoint(B.x, B.y);
@@ -393,15 +394,39 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var maxX = Math.max(A.x, B.x, C.x );
         var minY = Math.min( A.y, B.y, C.y );
         var maxY = Math.max(A.y, B.y, C.y );
-        var cut1;
-        var cut2;
+        var cut1 = "nichts";
+        var cut2 = "nichts";
         for( var i = minY; i < maxY; i++ ) {
             for( var j = minX; j < maxX; j++ ) {
                 if( geradenGleichung( A, C).schneidetsich( i, j) ) {
+                    if( cut1 == "nichts" ) {
+                        cut1 = j;
+                    } else if( cut2 == "nichts" ) {
+                        cut2 = j;
+                    }
+                }else if( geradenGleichung( A, B).schneidetsich( i, j) ) {
+                    if( cut1 == "nichts" ) {
+                        cut1 = j;
+                    } else if( cut2 == "nichts" ) {
+                        cut2 = j;
+                    }
+                }else if( geradenGleichung( B, C).schneidetsich( i, j) ) {
+                    if( cut1 == "nichts" ) {
+                        cut1 = j;
+                    } else if( cut2 == "nichts" ) {
+                        cut2 = j;
+                    }
+                }
+            } if( cut1 != "nichts" && cut2 != "nichts" ) {
+                for( var start = cut1; start < cut2; start ++ ) {
+                    drawPoint( start, i, color);
 
                 }
             }
+            cut1 = -1;
+            cut2 = -1;
         }
+        
 // END AUFGABE b TEIL 2    
     }
 
