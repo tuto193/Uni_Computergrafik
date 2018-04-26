@@ -283,28 +283,41 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var pointF = new Point3D( -x, -y, z);
         var pointG = new Point3D( x, -y, -z);
         var pointH = new Point3D( -x, -y, -z);
-        // AXis A D F and G
-        var triangle1 = new Triangle3D( pointA, pointB, pointC );
-        var triangle2 = new Triangle3D( pointA, pointB, pointE );
-        var triangle3 = new Triangle3D( pointA, pointE, pointC );
-
-        var triangle4 = new Triangle3D( pointD, pointB, pointC );
-        var triangle5 = new Triangle3D( pointD, pointB, pointF );
-        var triangle6 = new Triangle3D( pointD, pointG, pointC );
-
-        var triangle7 = new Triangle3D( pointF, pointB, pointE );
-        var triangle8 = new Triangle3D( pointF, pointB, pointH );
-        var triangle9 = new Triangle3D( pointF, pointH, pointE );
-
-        var triangle10 = new Triangle3D( pointG, pointC, pointE );
-        var triangle11 = new Triangle3D( pointG, pointH, pointC );
-        var triangle12 = new Triangle3D( pointG, pointH, pointE );
         var color1 = 127;
         var color2 = 127;
         var color3 = 127;
-        for( var index = 0; index < 3; index++ ) {
-            
-        }
+        // AXis A D F and G
+        var color = [color1, color2, color3];
+        // Dreiecke
+        var triangle1 = new Triangle3D( pointA, pointB, pointC, color );
+        var triangle2 = new Triangle3D( pointA, pointB, pointE, color );
+        var triangle3 = new Triangle3D( pointA, pointE, pointC, color );
+
+        var triangle4 = new Triangle3D( pointD, pointB, pointC, color );
+        var triangle5 = new Triangle3D( pointD, pointB, pointF, color );
+        var triangle6 = new Triangle3D( pointD, pointG, pointC, color );
+
+        var triangle7 = new Triangle3D( pointF, pointB, pointE, color );
+        var triangle8 = new Triangle3D( pointF, pointB, pointH, color );
+        var triangle9 = new Triangle3D( pointF, pointH, pointE, color );
+
+        var triangle10 = new Triangle3D( pointG, pointC, pointE, color );
+        var triangle11 = new Triangle3D( pointG, pointH, pointC, color );
+        var triangle12 = new Triangle3D( pointG, pointH, pointE, color );
+
+        // Push triangles
+        trianglearray.push(triangle1);  
+        trianglearray.push(triangle2);  
+        trianglearray.push(triangle3);  
+        trianglearray.push(triangle4);  
+        trianglearray.push(triangle6);  
+        trianglearray.push(triangle7);  
+        trianglearray.push(triangle8);  
+        trianglearray.push(triangle9);  
+        trianglearray.push(triangle10);  
+        trianglearray.push(triangle12);  
+        trianglearray.push(triangle11);  
+        trianglearray.push(triangle5);  
         
 
 
