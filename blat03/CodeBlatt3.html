@@ -370,7 +370,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
-        function geradenGleichung ( pointA, pointB, x, y ) {
+        function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), x=0, y=0 ) {
             var steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
@@ -411,10 +411,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                         cut2 = j;
                     }
                 }
-            } if( cut1 != 0 && cut2 != 0 ) {
-                for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
-                    drawPoint( start, i, color);
-                }
+            } for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
+                drawPoint( start, i, color);
             }
             cut1 = 0;
             cut2 = 0;
