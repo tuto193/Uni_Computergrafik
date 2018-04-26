@@ -165,8 +165,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
     var linearray = [];
         function createLines () {
 // BEGIN AUFGABE a TEIL 1
-            for( var i = 0; i < 400; i += 20 ) {
-                for( var j = 0; j < 400; j += 20 ) {
+            for( var i = 0; i < 400; i += 50 ) {
+                for( var j = 0; j < 400; j += 50 ) {
                     var start = new Point3D( -200, j - 200, i - 200, 1 );
                     var end = new Point3D( 200, j - 200, i - 200, 1 );
                     var myLine = new Line3D( start, end );
@@ -226,14 +226,22 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
 // BEGIN AUFGABE a TEIL 2
         // We will get the a from the f(x) = ax + b
         var steigung = ((endpoint.y - startpoint.y) / (endpoint.x - startpoint.x) );
-        var beginX = min( startpoint.x, endpoint.x );
-        var endX = max( startpoint.x, endpoint.x );
-        var beginY = min( startpoint.y, endpoint.y );
-        var endY = max( startpoint.y, endpoint.y );
+        var beginX = Math.min( startpoint.x, endpoint.x );
+        var endX = Math.max( startpoint.x, endpoint.x );
+        var beginY = Math.min( startpoint.y, endpoint.y );
+        var endY = Math.max( startpoint.y, endpoint.y );
+        var yAbschnitt = beginY - (beginX * steigung );
         if( steigung < 1.0 && steigung > -1.0 ) {
-
-        }
-
+            for( var i = beginX; i < endX; i++ ) {
+                var y = Math.round( (i * a) + yAbschnitt );
+                drawPoint(i, y);
+            }
+        } else {
+            for( var i = beginY; i < endY; i++ ) {
+                var x = Math.round( ( i - yAbschnitt) / steigung );
+                drawPoint(x, i);
+            }
+        } 
        
 // END AUFGABE a TEIL 2
     }
@@ -263,7 +271,43 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
     var trianglearray = [];
     function createTriangles () {
 // BEGIN AUFGABE b TEIL 1
-      
+        var x = 200;
+        var y = 200;
+        var z = 200;
+        // Seite 1
+        var pointA = new Point3D( x, y, z );
+        var pointB = new Point3D( -x, y, z );
+        var pointC = new Point3D( x, y, -z );
+        var pointD = new Point3D( -x, y, -z );
+        var pointE = new Point3D( x, -y, z);
+        var pointF = new Point3D( -x, -y, z);
+        var pointG = new Point3D( x, -y, -z);
+        var pointH = new Point3D( -x, -y, -z);
+        // AXis A D F and G
+        var triangle1 = new Triangle3D( pointA, pointB, pointC );
+        var triangle2 = new Triangle3D( pointA, pointB, pointE );
+        var triangle3 = new Triangle3D( pointA, pointE, pointC );
+
+        var triangle4 = new Triangle3D( pointD, pointB, pointC );
+        var triangle5 = new Triangle3D( pointD, pointB, pointF );
+        var triangle6 = new Triangle3D( pointD, pointG, pointC );
+
+        var triangle7 = new Triangle3D( pointF, pointB, pointE );
+        var triangle8 = new Triangle3D( pointF, pointB, pointH );
+        var triangle9 = new Triangle3D( pointF, pointH, pointE );
+
+        var triangle10 = new Triangle3D( pointG, pointC, pointE );
+        var triangle11 = new Triangle3D( pointG, pointH, pointC );
+        var triangle12 = new Triangle3D( pointG, pointH, pointE );
+        var color1 = 127;
+        var color2 = 127;
+        var color3 = 127;
+        for( var index = 0; index < 3; index++ ) {
+            
+        }
+        
+
+
 // END AUFGABE b TEIL 1
     }
 
