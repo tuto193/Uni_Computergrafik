@@ -238,7 +238,9 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             }
         } else {
             for( var i = beginY; i < endY; i++ ) {
-                var x = Math.round( ( i - yAbschnitt) / steigung );
+                if( steigung != 0 ){
+                    var x = Math.round( ( i - yAbschnitt) / steigung );
+                }
                 drawPoint(x, i);
             }
         } 
@@ -286,8 +288,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var color1 = 127;
         var color2 = 127;
         var color3 = 127;
-        // AXis A D F and G
         this.color = [color1, color2, color3];
+        // AXis A D F and G
         // Dreiecke
         var triangle1 = new Triangle3D( pointA, pointB, pointC, color );
         var triangle2 = new Triangle3D( pointA, pointB, pointE, color );
@@ -318,13 +320,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         trianglearray.push(triangle12);  
         trianglearray.push(triangle11);  
         trianglearray.push(triangle5);  
-        
-
-
 // END AUFGABE b TEIL 1
     }
-
-
     // transform array of triangles
     function transformTriangles (trianglearray) {
         var transMat = mouseRotMat;
@@ -340,8 +337,6 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         
         return trianglesTrans;
     }
-
-
     // project array of triangles
     function projectTriangles (trianglearray) { 
         var ez = 0.8*size;
@@ -362,7 +357,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         return trianglesProj;
     }
 
-    function geradenGleichung( pointA=new Point3D(), pointB=new Point3D ) {
+    function geradenGleichung( pointA=new Point3D(), pointB=new Point3D() ) {
         this.steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
         var beginX = Math.min( pointA.x, pointB.x );
         var endX = Math.max( pointA.x, pointB.x );
