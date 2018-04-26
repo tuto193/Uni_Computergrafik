@@ -288,38 +288,30 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var color1 = 127;
         var color2 = 127;
         var color3 = 127;
-        this.color = [color1, color2, color3];
+        var color = [color1, color2, color3];
         // AXis A D F and G
         // Dreiecke
+        // Corner A
         var triangle1 = new Triangle3D( pointA, pointB, pointC, color );
         var triangle2 = new Triangle3D( pointA, pointB, pointE, color );
         var triangle3 = new Triangle3D( pointA, pointE, pointC, color );
-
+        // Corner D
         var triangle4 = new Triangle3D( pointD, pointB, pointC, color );
         var triangle5 = new Triangle3D( pointD, pointB, pointF, color );
         var triangle6 = new Triangle3D( pointD, pointG, pointC, color );
-
+        // Corner F
         var triangle7 = new Triangle3D( pointF, pointB, pointE, color );
         var triangle8 = new Triangle3D( pointF, pointB, pointH, color );
         var triangle9 = new Triangle3D( pointF, pointH, pointE, color );
-
+        // Corner G
         var triangle10 = new Triangle3D( pointG, pointC, pointE, color );
         var triangle11 = new Triangle3D( pointG, pointH, pointC, color );
         var triangle12 = new Triangle3D( pointG, pointH, pointE, color );
 
         // Push triangles
-        trianglearray.push(triangle1);  
-        trianglearray.push(triangle2);  
-        trianglearray.push(triangle3);  
-        trianglearray.push(triangle4);  
-        trianglearray.push(triangle6);  
-        trianglearray.push(triangle7);  
-        trianglearray.push(triangle8);  
-        trianglearray.push(triangle9);  
-        trianglearray.push(triangle10);  
-        trianglearray.push(triangle12);  
-        trianglearray.push(triangle11);  
-        trianglearray.push(triangle5);  
+        trianglearray.push(triangle1, triangle2, triangle3, triangle4, triangle5,
+        triangle6, triangle7, triangle8, triangle9, triangle10, triangle11, triangle12);  
+
 // END AUFGABE b TEIL 1
     }
     // transform array of triangles
@@ -370,7 +362,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
-        function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), x=0, y=0 ) {
+        function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0 ) {
             var steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
@@ -388,31 +380,36 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var maxX = Math.max(A.x, B.x, C.x );
         var minY = Math.min( A.y, B.y, C.y );
         var maxY = Math.max(A.y, B.y, C.y );
+        var cutOnce = false;
         var cut1 = 0;
         var cut2 = 0;
-        for( var i = minY; i < maxY; i++ ) {
-            for( var j = minX; j < maxX; j++ ) {
+        for( var i = Math.round(minY); i < Math.round(maxY); i++ ) {
+            for( var j = Math.round(minX); j < Math.round(maxX); j++ ) {
                 if( geradenGleichung(A, B, j, i) ) {
-                    if( cut1 == 0 ) {
+                    if( !cutOnce ) {
                         cut1 = j;
-                    } else if( cut2 == 0 ) {
+                        cutOnce = true;
+                    } else {
                         cut2 = j;
                     }
                 }else if( geradenGleichung(A, C, j, i) ) {
-                    if( cut1 == 0 ) {
+                    if( !cutOnce ) {
                         cut1 = j;
-                    } else if( cut2 == 0 ) {
+                        cutOnce = true;
+                    } else {
                         cut2 = j;
                     }
                 }else if( geradenGleichung(C, B, j, i) ) {
-                    if( cut1 == 0 ) {
+                    if( !cutOnce ) {
                         cut1 = j;
-                    } else if( cut2 == 0 ) {
+                        cutOnce = true;
+                    } else {
                         cut2 = j;
                     }
                 }
+                cutOnce = false;
             } for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
-                drawPoint( start, i, color);
+                drawPoint( start, i, triangle.color);
             }
             cut1 = 0;
             cut2 = 0;
