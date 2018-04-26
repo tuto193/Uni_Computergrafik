@@ -233,7 +233,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var yAbschnitt = beginY - (beginX * steigung );
         if( steigung < 1.0 && steigung > -1.0 ) {
             for( var i = beginX; i < endX; i++ ) {
-                var y = Math.round( (i * a) + yAbschnitt );
+                var y = Math.round( (i * steigung) + yAbschnitt );
                 drawPoint(i, y);
             }
         } else {
@@ -357,22 +357,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         return trianglesProj;
     }
 
-    function geradenGleichung( pointA=new Point3D(), pointB=new Point3D() ) {
-        this.steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
-        var beginX = Math.min( pointA.x, pointB.x );
-        var endX = Math.max( pointA.x, pointB.x );
-        var beginY = Math.min( pointA.y, pointB.y );
-        var endY = Math.max( pointA.y, pointB.y );
-        this.yAbschnitt = beginY - (beginX * steigung );
-
-        this.schneidetsich = function( x, y ) {
-            if( y == (x*this.steigung + this.yAbschnitt) ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
+   
     // draw triangle
     function drawTriangle (triangle) {
         var A = (triangle.A).dehomogen();
@@ -385,41 +370,54 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
+        function geradenGleichung ( pointA, pointB, x, y ) {
+            var steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
+            var beginX = Math.min( pointA.x, pointB.x );
+            var endX = Math.max( pointA.x, pointB.x );
+            var beginY = Math.min( pointA.y, pointB.y );
+            var endY = Math.max( pointA.y, pointB.y );
+            var yAbschnitt = beginY - (beginX * steigung );
+
+            if( y == (x*steigung + yAbschnitt) ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
         var minX = Math.min( A.x, B.x, C.x );
         var maxX = Math.max(A.x, B.x, C.x );
         var minY = Math.min( A.y, B.y, C.y );
         var maxY = Math.max(A.y, B.y, C.y );
-        var cut1 = "nichts";
-        var cut2 = "nichts";
+        var cut1 = 0;
+        var cut2 = 0;
         for( var i = minY; i < maxY; i++ ) {
             for( var j = minX; j < maxX; j++ ) {
-                if( geradenGleichung( A, C).schneidetsich( i, j) ) {
-                    if( cut1 == "nichts" ) {
+                if( geradenGleichung(A, B, j, i) ) {
+                    if( cut1 == 0 ) {
                         cut1 = j;
-                    } else if( cut2 == "nichts" ) {
+                    } else if( cut2 == 0 ) {
                         cut2 = j;
                     }
-                }else if( geradenGleichung( A, B).schneidetsich( i, j) ) {
-                    if( cut1 == "nichts" ) {
+                }else if( geradenGleichung(A, C, j, i) ) {
+                    if( cut1 == 0 ) {
                         cut1 = j;
-                    } else if( cut2 == "nichts" ) {
+                    } else if( cut2 == 0 ) {
                         cut2 = j;
                     }
-                }else if( geradenGleichung( B, C).schneidetsich( i, j) ) {
-                    if( cut1 == "nichts" ) {
+                }else if( geradenGleichung(C, B, j, i) ) {
+                    if( cut1 == 0 ) {
                         cut1 = j;
-                    } else if( cut2 == "nichts" ) {
+                    } else if( cut2 == 0 ) {
                         cut2 = j;
                     }
                 }
-            } if( cut1 != "nichts" && cut2 != "nichts" ) {
-                for( var start = cut1; start < cut2; start ++ ) {
+            } if( cut1 != 0 && cut2 != 0 ) {
+                for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
                     drawPoint( start, i, color);
-
                 }
             }
-            cut1 = -1;
-            cut2 = -1;
+            cut1 = 0;
+            cut2 = 0;
         }
         
 // END AUFGABE b TEIL 2    
