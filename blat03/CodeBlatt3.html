@@ -362,7 +362,22 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         return trianglesProj;
     }
 
+    function geradenGleichung( pointA = new Point3D(), pointB = new Point3D(), x, y ) {
+        this.steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
+        var beginX = Math.min( pointA.x, pointB.x );
+        var endX = Math.max( pointA.x, pointB.x );
+        var beginY = Math.min( pointA.y, pointB.y );
+        var endY = Math.max( pointA.y, pointB.y );
+        this.yAbschnitt = beginY - (beginX * steigung );
 
+        function schneidetsich( x, y ) {
+            if( y == x*this.steigung + yAbschnitt ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
     // draw triangle
     function drawTriangle (triangle) {
         var A = (triangle.A).dehomogen();
@@ -374,7 +389,17 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
-
+        var minX = Math.min( A.x, B.x, C.x );
+        var maxX = Math.max(A.x, B.x, C.x );
+        var minY = Math.min( A.y, B.y, C.y );
+        var maxY = Math.max(A.y, B.y, C.y );
+        var cut1;
+        var cut2;
+        for( var i = minY; i < maxY; i++ ) {
+            for( var j = minX; j < maxX; j++ ) {
+                if( geradenGleichung())
+            }
+        }
 // END AUFGABE b TEIL 2    
     }
 
