@@ -370,10 +370,14 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             var endY = Math.max( pointA.y, pointB.y );
             var yAbschnitt = beginY - (beginX * steigung );
 
-            if( y == (x*steigung + yAbschnitt) ) {
-                return true;
-            } else {
-                return false;
+            this.x = (y - yAbschnitt)/ steigung;
+
+            function inGerade() {
+                if( this.x > endX || this.x < beginX ) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
         var minX = Math.min( A.x, B.x, C.x );
@@ -384,31 +388,35 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var cut1 = 0;
         var cut2 = 0;
         for( var i = Math.round(minY); i < Math.round(maxY); i++ ) {
-            for( var j = Math.round(minX); j < Math.round(maxX); j++ ) {
-                if( geradenGleichung(A, B, j, i) ) {
-                    if( !cutOnce ) {
-                        cut1 = j;
-                        cutOnce = true;
-                    } else {
-                        cut2 = j;
-                    }
-                }else if( geradenGleichung(A, C, j, i) ) {
-                    if( !cutOnce ) {
-                        cut1 = j;
-                        cutOnce = true;
-                    } else {
-                        cut2 = j;
-                    }
-                }else if( geradenGleichung(C, B, j, i) ) {
-                    if( !cutOnce ) {
-                        cut1 = j;
-                        cutOnce = true;
-                    } else {
-                        cut2 = j;
-                    }
+            var gerade1 = new geradenGleichung( A, B, i );
+            var gerade2 = new geradenGleichung(A, C, i );
+            var gerade3 = new geradenGleichung(C, B, i );
+            if( gerade1.inGerade() ) {
+                if( !cutOnce ) {
+                    cut1 = Math.round(gerade1.x);
+                    cutOnce = true;
+                } else {
+                    cut2 = Math.round(geradenGleichung(A, B, i).x);
                 }
-                cutOnce = false;
-            } for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
+            }
+            if( geradenGleichung(A, C, i).inGerade() ) {
+                if( !cutOnce ) {
+                    cut1 = Math.round(geradenGleichung(A, C, i).x);
+                    cutOnce = true;
+                } else {
+                    cut2 = Math.round(geradenGleichung(A, C, i).x);
+                }
+            }
+            if( geradenGleichung(C, B, i).inGerade() ) {
+                if( !cutOnce ) {
+                    cut1 = Math.round(geradenGleichung(C, B, i).x);
+                    cutOnce = true;
+                } else {
+                    cut2 = Math.round(geradenGleichung(C, B, i).x);
+                }
+            }
+            cutOnce = false;
+            for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
                 drawPoint( start, i, triangle.color);
             }
             cut1 = 0;
