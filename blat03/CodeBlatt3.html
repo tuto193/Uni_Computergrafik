@@ -362,7 +362,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
-        function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0 ) {
+        function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0, x=0 ) {
             var steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
@@ -372,7 +372,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
 
             this.x = (y - yAbschnitt)/ steigung;
 
-            function inGerade() {
+            this.inGerade = function() {
                 if( this.x > endX || this.x < beginX ) {
                     return false;
                 } else {
@@ -396,23 +396,23 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                     cut1 = Math.round(gerade1.x);
                     cutOnce = true;
                 } else {
-                    cut2 = Math.round(geradenGleichung(A, B, i).x);
+                    cut2 = Math.round(gerade1.x);
                 }
             }
-            if( geradenGleichung(A, C, i).inGerade() ) {
+            if( gerade2.inGerade() ) {
                 if( !cutOnce ) {
-                    cut1 = Math.round(geradenGleichung(A, C, i).x);
+                    cut1 = Math.round(gerade2.x);
                     cutOnce = true;
                 } else {
-                    cut2 = Math.round(geradenGleichung(A, C, i).x);
+                    cut2 = Math.round(getade2.x);
                 }
             }
-            if( geradenGleichung(C, B, i).inGerade() ) {
+            if( gerade3.inGerade() ) {
                 if( !cutOnce ) {
-                    cut1 = Math.round(geradenGleichung(C, B, i).x);
+                    cut1 = Math.round(gerade3.x);
                     cutOnce = true;
                 } else {
-                    cut2 = Math.round(geradenGleichung(C, B, i).x);
+                    cut2 = Math.round(gerade3.x);
                 }
             }
             cutOnce = false;
