@@ -408,11 +408,11 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             var beginY = (beginX == pointA.x )? pointA.y : pointB.y;
             var endY = ( beginY == pointA.y )? pointB.y : pointA.y;
             var yAbschnitt = beginY - (beginX * steigung );
-            this.y = Math.round(y);
+            this.y = y;
 
-            this.x = Math.round(this.y - yAbschnitt);
+            this.x = this.y - yAbschnitt;
             if( steigung != 0 ){
-                this.x = Math.round(this.x / steigung);
+                this.x = this.x / steigung;
             }
 
             // Will return true if the point, that was gotten throw the y parameter,
@@ -431,6 +431,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var minY = Math.min( A.y, B.y, C.y );
         var maxY = Math.max(A.y, B.y, C.y );
         var cutOnce = false;
+        var cutTwice = false;
         var cut1 = null;
         var cut2 = null;
         // We scan and draw from top to bottom & left to right
@@ -445,27 +446,31 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                 if( !cutOnce ) {
                     cut1 = Math.round(gerade1.x);
                     cutOnce = true;
-                } else {
+                } else if( !cutTwice) {
                     cut2 = Math.round(gerade1.x);
+                    cutTwice = true;
                 }
             }
             if( gerade2.inGerade() ) {
                 if( !cutOnce ) {
                     cut1 = Math.round(gerade2.x);
                     cutOnce = true;
-                } else {
+                } else if ( !cutTwice ) {
                     cut2 = Math.round(getade2.x);
+                    cutTwice = true;
                 }
             }
             if( gerade3.inGerade() ) {
                 if( !cutOnce ) {
                     cut1 = Math.round(gerade3.x);
                     cutOnce = true;
-                } else {
+                } else if( !cutTwice ) {
                     cut2 = Math.round(gerade3.x);
+                    cutTwice = true;
                 }
             }
             cutOnce = false;
+            cutTwice = false;
             // Our cuts are the limiting values of our drawing. The
             for( var start = Math.min(cut1, cut2); start <= Math.max(cut2, cut1); start ++ ) {
                 drawPoint( start, i, triangle.color);
