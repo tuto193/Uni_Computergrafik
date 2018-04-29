@@ -165,10 +165,22 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
     var linearray = [];
         function createLines () {
 // BEGIN AUFGABE a TEIL 1
-            for( var i = 0; i < 400; i += 50 ) {
-                for( var j = 0; j < 400; j += 50 ) {
-                    var start = new Point3D( -200, j - 200, i - 200, 1 );
-                    var end = new Point3D( 200, j - 200, i - 200, 1 );
+            for( var i = 0; i <= 200; i += 50 ) {
+                for( var j = 0; j <= 200; j += 50 ) {
+                    var start = new Point3D( -100, j - 100, i - 100, 1 );
+                    var end = new Point3D( 100, j - 100, i - 100, 1 );
+                    var myLine = new Line3D( start, end );
+                    linearray.push(myLine);
+                }
+                for( var k = 0; k <= 200; k += 50 ) {
+                    var start = new Point3D( k -100,-100, i - 100, 1 );
+                    var end = new Point3D( k - 100, 100, i - 100, 1 );
+                    var myLine = new Line3D( start, end );
+                    linearray.push(myLine);
+                }
+                for( var l = 0; l <= 200; l += 50 ) {
+                    var start = new Point3D( l -100,i-100,-100, 1 );
+                    var end = new Point3D( l - 100, i-100, 100, 1 );
                     var myLine = new Line3D( start, end );
                     linearray.push(myLine);
                 }
@@ -225,12 +237,20 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
 // END TESTCODE
 // BEGIN AUFGABE a TEIL 2
         // We will get the a from the f(x) = ax + b
-        var steigung = ((endpoint.y - startpoint.y) / (endpoint.x - startpoint.x) );
+        
         var beginX = Math.min( startpoint.x, endpoint.x );
         var endX = Math.max( startpoint.x, endpoint.x );
         var beginY = Math.min( startpoint.y, endpoint.y );
         var endY = Math.max( startpoint.y, endpoint.y );
+        // Check steigung in special cases
+        if( endpoint.x - startpoint.x != 0 ){
+            var steigung = ((endpoint.y - startpoint.y) / (endpoint.x - startpoint.x) );
+        } else {
+            var steigung = beginY - endY;
+        }
+
         var yAbschnitt = beginY - (beginX * steigung );
+        // Draw accordingly using the algorithm
         if( steigung < 1.0 && steigung > -1.0 ) {
             for( var i = beginX; i < endX; i++ ) {
                 var y = Math.round( (i * steigung) + yAbschnitt );
@@ -240,6 +260,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             for( var i = beginY; i < endY; i++ ) {
                 if( steigung != 0 ){
                     var x = Math.round( ( i - yAbschnitt) / steigung );
+                }else {
+                    var x = Math.round( i - yAbschnitt );
                 }
                 drawPoint(x, i);
             }
@@ -273,9 +295,9 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
     var trianglearray = [];
     function createTriangles () {
 // BEGIN AUFGABE b TEIL 1
-        var x = 200;
-        var y = 200;
-        var z = 200;
+        var x = 100;
+        var y = 100;
+        var z = 100;
         // Seite 1
         var pointA = new Point3D( x, y, z );
         var pointB = new Point3D( -x, y, z );
@@ -285,28 +307,39 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var pointF = new Point3D( -x, -y, z);
         var pointG = new Point3D( x, -y, -z);
         var pointH = new Point3D( -x, -y, -z);
-        var color1 = 127;
-        var color2 = 127;
-        var color3 = 127;
-        var color = [color1, color2, color3];
+        var color1 = 100;
+        var color2 = 150;
+        var color3 = 200;
+        var grey = [color1, color2, color3];
+        var colora = [0, color2, color3 ];
+        var colorb = [color1, 0, color3 ];
+        var colorc = [color1, color2, 0 ];
+        var colord = [0, color2, 0 ];
+        var colore = [0, 0, color3 ];
+        var colorf = [color1, 200, 20 ];
+        var colorg = [color1, 20, 200 ];
+        var colorh = [color1, 15, 60 ];
+        var colori = [color1, color2, 50 ];
+        var colorj = [color3, 69, 69 ];
+        var colork = [color2, 70, 89 ];
         // AXis A D F and G
         // Dreiecke
         // Corner A
-        var triangle1 = new Triangle3D( pointA, pointB, pointC, color );
-        var triangle2 = new Triangle3D( pointA, pointB, pointE, color );
-        var triangle3 = new Triangle3D( pointA, pointE, pointC, color );
+        var triangle1 = new Triangle3D( pointA, pointB, pointC, grey  );
+        var triangle2 = new Triangle3D( pointA, pointB, pointE, colora );
+        var triangle3 = new Triangle3D( pointA, pointE, pointC, colorb );
         // Corner D
-        var triangle4 = new Triangle3D( pointD, pointB, pointC, color );
-        var triangle5 = new Triangle3D( pointD, pointB, pointF, color );
-        var triangle6 = new Triangle3D( pointD, pointG, pointC, color );
+        var triangle4 = new Triangle3D( pointD, pointB, pointC, colorc );
+        var triangle5 = new Triangle3D( pointD, pointB, pointF, colord );
+        var triangle6 = new Triangle3D( pointD, pointG, pointC, colore );
         // Corner F
-        var triangle7 = new Triangle3D( pointF, pointB, pointE, color );
-        var triangle8 = new Triangle3D( pointF, pointB, pointH, color );
-        var triangle9 = new Triangle3D( pointF, pointH, pointE, color );
+        var triangle7 = new Triangle3D( pointF, pointB, pointE, colorf );
+        var triangle8 = new Triangle3D( pointF, pointD, pointH, colorg );
+        var triangle9 = new Triangle3D( pointF, pointH, pointE, colorh );
         // Corner G
-        var triangle10 = new Triangle3D( pointG, pointC, pointE, color );
-        var triangle11 = new Triangle3D( pointG, pointH, pointC, color );
-        var triangle12 = new Triangle3D( pointG, pointH, pointE, color );
+        var triangle10 = new Triangle3D( pointG, pointC, pointE, colori );
+        var triangle11 = new Triangle3D( pointG, pointH, pointD, colorj );
+        var triangle12 = new Triangle3D( pointG, pointH, pointE, colork );
 
         // Push triangles
         trianglearray.push(triangle1, triangle2, triangle3, triangle4, triangle5,
@@ -363,17 +396,23 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
         function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0, x=0 ) {
-            var steigung = (pointB.y - pointA.y ) / (pointB.x - pointA.x);
+            var steigung = (pointB.y - pointA.y );
+            if( pointB.x != pointA.x ) {
+                steigung /= ( pointB.x - pointA.x );
+            }
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
             var beginY = Math.min( pointA.y, pointB.y );
             var endY = Math.max( pointA.y, pointB.y );
             var yAbschnitt = beginY - (beginX * steigung );
 
-            this.x = (y - yAbschnitt)/ steigung;
+            this.x = Math.round( y - yAbschnitt);
+            if( steigung != 0 ){
+                this.x = Math.round(this.x / steigung);
+            }
 
             this.inGerade = function() {
-                if( this.x > endX || this.x < beginX ) {
+                if( this.x > endX || this.x < beginX || y > endY || y < beginY ) {
                     return false;
                 } else {
                     return true;
@@ -387,7 +426,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var cutOnce = false;
         var cut1 = 0;
         var cut2 = 0;
-        for( var i = Math.round(minY); i < Math.round(maxY); i++ ) {
+        // We scan and draw from top to bottom & left to right
+        for( var i = Math.round(minY); i <= Math.round(maxY); i++ ) {
             var gerade1 = new geradenGleichung( A, B, i );
             var gerade2 = new geradenGleichung(A, C, i );
             var gerade3 = new geradenGleichung(C, B, i );
@@ -416,7 +456,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                 }
             }
             cutOnce = false;
-            for( var start = Math.min(cut1, cut2); start < Math.max(cut2, cut1); start ++ ) {
+            for( var start = Math.min(cut1, cut2); start <= Math.max(cut2, cut1); start ++ ) {
                 drawPoint( start, i, triangle.color);
             }
             cut1 = 0;
