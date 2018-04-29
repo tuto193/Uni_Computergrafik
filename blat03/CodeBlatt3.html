@@ -165,20 +165,20 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
     var linearray = [];
         function createLines () {
 // BEGIN AUFGABE a TEIL 1
-            for( var i = 0; i <= 200; i += 50 ) {
-                for( var j = 0; j <= 200; j += 50 ) {
+            for( var i = 0; i <= 200; i += 200 ) {
+                for( var j = 0; j <= 200; j += 200 ) {
                     var start = new Point3D( -100, j - 100, i - 100, 1 );
                     var end = new Point3D( 100, j - 100, i - 100, 1 );
                     var myLine = new Line3D( start, end );
                     linearray.push(myLine);
                 }
-                for( var k = 0; k <= 200; k += 50 ) {
+                for( var k = 0; k <= 200; k += 200 ) {
                     var start = new Point3D( k -100,-100, i - 100, 1 );
                     var end = new Point3D( k - 100, 100, i - 100, 1 );
                     var myLine = new Line3D( start, end );
                     linearray.push(myLine);
                 }
-                for( var l = 0; l <= 200; l += 50 ) {
+                for( var l = 0; l <= 200; l += 200 ) {
                     var start = new Point3D( l -100,i-100,-100, 1 );
                     var end = new Point3D( l - 100, i-100, 100, 1 );
                     var myLine = new Line3D( start, end );
@@ -242,22 +242,23 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var endX = Math.max( startpoint.x, endpoint.x );
         var beginY = Math.min( startpoint.y, endpoint.y );
         var endY = Math.max( startpoint.y, endpoint.y );
+        var steigung = 0;
         // Check steigung in special cases
         if( endpoint.x - startpoint.x != 0 ){
-            var steigung = ((endpoint.y - startpoint.y) / (endpoint.x - startpoint.x) );
+            steigung = ((endpoint.y - startpoint.y) / (endpoint.x - startpoint.x) );
         } else {
-            var steigung = beginY - endY;
+            steigung = beginY - endY;
         }
 
         var yAbschnitt = beginY - (beginX * steigung );
         // Draw accordingly using the algorithm
         if( steigung < 1.0 && steigung > -1.0 ) {
-            for( var i = beginX; i < endX; i++ ) {
+            for( var i = beginX; i <= endX; i++ ) {
                 var y = Math.round( (i * steigung) + yAbschnitt );
                 drawPoint(i, y);
             }
         } else {
-            for( var i = beginY; i < endY; i++ ) {
+            for( var i = beginY; i <= endY; i++ ) {
                 if( steigung != 0 ){
                     var x = Math.round( ( i - yAbschnitt) / steigung );
                 }else {
@@ -395,6 +396,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         drawPoint(C.x, C.y);
 // END TEST CODE    
 // BEGIN AUFGABE b TEIL 2    
+        // This is the general equation that will define all of the limiting lines
         function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0, x=0 ) {
             var steigung = (pointB.y - pointA.y );
             if( pointB.x != pointA.x ) {
@@ -402,35 +404,43 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             }
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
-            var beginY = Math.min( pointA.y, pointB.y );
-            var endY = Math.max( pointA.y, pointB.y );
+            // X and Y should come on both sides from the same points!
+            var beginY = (beginX == pointA.x )? pointA.y : pointB.y;
+            var endY = ( beginY == pointA.y )? pointB.y : pointA.y;
             var yAbschnitt = beginY - (beginX * steigung );
+            this.y = Math.round(y);
 
-            this.x = Math.round( y - yAbschnitt);
+            this.x = Math.round(this.y - yAbschnitt);
             if( steigung != 0 ){
                 this.x = Math.round(this.x / steigung);
             }
 
+            // Will return true if the point, that was gotten throw the y parameter,
+            // is indeed within the defined limits of this line
             this.inGerade = function() {
-                if( this.x > endX || this.x < beginX || y > endY || y < beginY ) {
+                if( this.x > endX || this.x < beginX || this.y > endY || this.y < beginY ) {
                     return false;
                 } else {
                     return true;
                 }
             }
         }
+        // We define the limiting BOX of our triangle
         var minX = Math.min( A.x, B.x, C.x );
         var maxX = Math.max(A.x, B.x, C.x );
         var minY = Math.min( A.y, B.y, C.y );
         var maxY = Math.max(A.y, B.y, C.y );
         var cutOnce = false;
-        var cut1 = 0;
-        var cut2 = 0;
+        var cut1 = null;
+        var cut2 = null;
         // We scan and draw from top to bottom & left to right
         for( var i = Math.round(minY); i <= Math.round(maxY); i++ ) {
             var gerade1 = new geradenGleichung( A, B, i );
             var gerade2 = new geradenGleichung(A, C, i );
             var gerade3 = new geradenGleichung(C, B, i );
+
+            // The scan-line should/can only cut throw TWO of the delimiting lines
+            // of our triangle.
             if( gerade1.inGerade() ) {
                 if( !cutOnce ) {
                     cut1 = Math.round(gerade1.x);
@@ -456,11 +466,12 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                 }
             }
             cutOnce = false;
+            // Our cuts are the limiting values of our drawing. The
             for( var start = Math.min(cut1, cut2); start <= Math.max(cut2, cut1); start ++ ) {
                 drawPoint( start, i, triangle.color);
             }
-            cut1 = 0;
-            cut2 = 0;
+            cut1 = null;
+            cut2 = null;
         }
         
 // END AUFGABE b TEIL 2    
