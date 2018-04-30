@@ -398,15 +398,16 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
 // BEGIN AUFGABE b TEIL 2    
         // This is the general equation that will define all of the limiting lines
         function geradenGleichung ( pointA=new Point3D(), pointB=new Point3D(), y=0, x=0 ) {
-            var steigung = (pointB.y - pointA.y );
-            if( pointB.x != pointA.x ) {
-                steigung /= ( pointB.x - pointA.x );
-            }
+            
             var beginX = Math.min( pointA.x, pointB.x );
             var endX = Math.max( pointA.x, pointB.x );
             // X and Y should come on both sides from the same points!
             var beginY = (beginX == pointA.x )? pointA.y : pointB.y;
             var endY = ( beginY == pointA.y )? pointB.y : pointA.y;
+            var steigung = (endY - beginY );
+            if( endX != beginX ) {
+                steigung /= ( endX - beginX );
+            }
             var yAbschnitt = beginY - (beginX * steigung );
             this.y = y;
 
@@ -418,7 +419,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             // Will return true if the point, that was gotten throw the y parameter,
             // is indeed within the defined limits of this line
             this.inGerade = function() {
-                if( this.x > endX || this.x < beginX || this.y > endY || this.y < beginY ) {
+                if( this.x > endX || this.x < beginX ) {
                     return false;
                 } else {
                     return true;
@@ -432,8 +433,8 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
         var maxY = Math.max(A.y, B.y, C.y );
         var cutOnce = false;
         var cutTwice = false;
-        var cut1 = null;
-        var cut2 = null;
+        var cut1;
+        var cut2;
         // We scan and draw from top to bottom & left to right
         for( var i = Math.round(minY); i <= Math.round(maxY); i++ ) {
             var gerade1 = new geradenGleichung( A, B, i );
@@ -456,7 +457,7 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
                     cut1 = Math.round(gerade2.x);
                     cutOnce = true;
                 } else if ( !cutTwice ) {
-                    cut2 = Math.round(getade2.x);
+                    cut2 = Math.round(gerade2.x);
                     cutTwice = true;
                 }
             }
@@ -475,8 +476,6 @@ Sortiere Dreiecke: <input type="checkbox" id="striangles" value="c" onclick="sor
             for( var start = Math.min(cut1, cut2); start <= Math.max(cut2, cut1); start ++ ) {
                 drawPoint( start, i, triangle.color);
             }
-            cut1 = null;
-            cut2 = null;
         }
         
 // END AUFGABE b TEIL 2    
