@@ -346,9 +346,9 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             hVec = hVec.normalize();
 
             // h(transposed)n
-            var hTn = hVec.dot(nVec);
+            var hTn = Math.max(hVec.dot(nVec), 0);
             // l(transposed)n
-            var lTn = lVec.dot(nVec);
+            var lTn = Math.max(lVec.dot(nVec), 0);
 
             // they will be called "Mat" even though they are just vectors
              var cAmbMat = triColor.mul(cAmbient);
