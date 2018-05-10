@@ -304,6 +304,61 @@ Your browser does not support the HTML5 canvas tag.</canvas>
             var phongColor = new Vector3D(triangle.color[0], triangle.color[1], triangle.color[2]);
             
             // BEGIN AUFGABE 2
+            // THe most important vectors:
+            //  x = the point where the light meets the triangle
+            //  n = the normal from the triangle
+            //  v = Point to Eye
+            //  l = from Point to Lightsource
+            //  r = the reflected light vector
+            //  h = half-way vector
+
+            // x
+            var pointA = new Point3D( triangle.A.x, triangle.A.y, triangle.A.z, 1);
+            var pointB = new Point3D( triangle.B.x, triangle.B.y, triangle.B.z, 1);
+            var pointC = new Point3D( triangle.C.x, triangle.C.y, triangle.C.z, 1);
+            var averX = (pointA.x + pointB.x + pointC.x)/3;
+            var averY = (pointA.y + pointB.y + pointC.y)/3;
+            var averZ = (pointA.z + pointB.z + pointC.z)/3;
+
+            // x
+            var xVar = new Point3D( averX, averY, averZ, 1 );
+
+            // triangle Vectors
+            var AB = pointB.subtract(pointA);
+            var AC = pointC.subtract(pointA); 
+            // n
+            var nVec = AB.cross(AC);
+            nVec = nVec.normalize();
+            // v
+            var vVec = camPos.subtract(xVar);
+            vVec = vVec.normalize();
+
+            // l
+            var lVec = lightPos.subtract(xVar);
+            lVec = lVec.normalize();
+
+            // r
+            // r = 2*nnTl - l
+             var rVec = nVec.mul(2).mulVec( nVec.dot(lVec) ).sub(lVec);
+
+            // h
+            var hVec = vVec.add(lVec);
+            hVec = hVec.normalize();
+
+            // h(transposed)n
+            var hTn = hVec.dot(nVec);
+            // l(transposed)n
+            var lTn = lVec.dot(nVec);
+
+            // they will be called "Mat" even though they are just vectors
+             var cAmbMat = triColor.mul(cAmbient);
+             var cDifMat = triColor.mul(cDiffuse);
+             var cSpeMat = triColor.mul(cSpecular);
+
+            //Phong-Blinn-Modell
+            // = (Ca + Cd(lTn) + Cs(hTn)^s ) * Cy
+            phongColor = lightColor.mulVec( cAmbMat.add( cDifMat.mul( lTn ).add( cSpeMat.mul( Math.pow( hTn, shine ) ) ) ) );
+
                    
             // END AUFGABE 2
             
