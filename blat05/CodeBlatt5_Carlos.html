@@ -229,6 +229,33 @@ Your browser does not support the HTML5 canvas tag.</canvas>
         this.color = color;
         this.alpha = color[3];
     }
+
+    function heapify( parentNode, array, length ) {
+        var rChild;
+        var dummy;
+
+        while( 2 * parentNode + 1 < length ) {
+            // We are completely sure that the left child exists!
+            rChild = 2 * parentNode + 1; // we say that this child is the bigger one
+            if( ( 2 * parentNode + 2 < length ) && ( array[ 2 * parentNode + 2] > rChild ) ) {
+                rChild = 2 * parentNode + 2;
+            }
+
+            if( array[rChild] > array[parentNode] ) {
+                dummy = array[rChild];
+                array[rChild] = array[parentNode];
+                array[parentNode] = array[rChild];
+                parentNode = rChild;
+            } else {
+                parentNode = length;
+            }
+        }
+    }
+
+    function buildHeap( array ) {
+
+    }
+
     var zBuffer;
 
     // initialize z-buffer
