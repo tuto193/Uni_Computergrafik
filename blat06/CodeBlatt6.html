@@ -93,7 +93,15 @@
   
 // BEGIN MUSTERLOESUNG AUFGABE 2b
             varying vec3 vPosition;
-            varying 
+            varying vec3 vNormal;
+            varying vec3 vColor;
+
+            void main( void ) {
+                gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+
+                vPosition = ( uModelViewMatrix * aVertexPosition ).xyz;
+                
+            }
 // END MUSTERLOESUNG AUFGABE 2b
             `;
   
