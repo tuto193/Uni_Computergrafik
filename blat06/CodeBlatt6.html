@@ -97,10 +97,14 @@
             varying vec3 vColor;
 
             void main( void ) {
+
+                // Define the Position of the Vertex
                 gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
 
+                // Transform the values of the vertex and assign them to pass them on
                 vPosition = ( uModelViewMatrix * aVertexPosition ).xyz;
-                
+                vNormal = ( normalize( uNormalMatrix * aVertexNormal ) ).xyz;
+                vColor = aVertexColor.xyz;
             }
 // END MUSTERLOESUNG AUFGABE 2b
             `;
@@ -126,9 +130,34 @@
                 varying vec3 vColor;
 
                 void main(void) {
-                    gl_FragColor = vec4(0,0,0,1);
+                    //gl_FragColor = vec4(0,0,0,1);
 
 // BEGIN MUSTERLOESUNG AUFGABE 2c
+                    // just the variables for the Phong-Shading
+                    vec3 vVector = normalize( uCamPos - vPosition );
+                    vec3 lVector = normalize( uLightPos - vPosition );
+                    vec3 hVector = normalize( vVector + lVector );
+                    float ZERO = 0.0;
+
+                    // The specular part
+                    float scalSpec = dot( hVector, vNormal );
+                    scalSpec = pow( scalSpec, uShine );
+                    scalSpec = max( ZERO, scalSpec );
+                    
+                    // the Diffuse part
+                    float scalDif = dot( lVector, vNormal );
+                    scalDif = max( ZERO, scalDif );
+
+                    // Setting up the variables for our equation
+                    vec3 cAmb = vColor * uCAmbient;
+                    vec3 cDif = vColor * uCDiffuse;
+                    vec3 cSpec = vec3( 1, 1, 1 ) * uCSpecular;
+
+                    // the final color out of the equation
+                    vec3 phongColor = cAmb + ( cDif * scalDif ) + ( cSpec * scalSpec );
+
+                    // setting the color to our fragment
+                    gl_FragColor = vec4( phongColor * uLightColor, 1 );
 
 // END MUSTERLOESUNG AUFGABE 2c
                 }
