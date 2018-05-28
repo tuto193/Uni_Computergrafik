@@ -103,7 +103,7 @@
 
                 // Transform the values of the vertex and assign them to pass them on
                 vPosition = ( uModelViewMatrix * aVertexPosition ).xyz;
-                vNormal = ( normalize( uNormalMatrix * aVertexNormal ) ).xyz;
+                vNormal = ( uNormalMatrix * aVertexNormal ).xyz;
                 vColor = aVertexColor.xyz;
             }
 // END MUSTERLOESUNG AUFGABE 2b
@@ -341,7 +341,7 @@
             
             const colorBuffer = gl.createBuffer();
             gl.bindBuffer( gl.ARRAY_BUFFER, colorBuffer );
-            gl.bufferData( gl.ARRAY_BUFFER, new Uint8Array( colors ), gl.STATIC_DRAW );
+            gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( colors ), gl.STATIC_DRAW );
 
             const normalBuffer = gl.createBuffer();
             gl.bindBuffer( gl.ARRAY_BUFFER, normalBuffer );
