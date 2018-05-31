@@ -154,11 +154,12 @@
                     float cos_nh = max(dot(vNormal, h), 0.0);
                     vec3 specularTerm = uCSpecular * pow(cos_nh, uShine) * uLightColor;
 
-                    // Phong-Lighting
-                    vec3 vLighting = ambientTerm + diffuseTerm + specularTerm;
 
 
 // BEGIN AUFGABE 2 TEIL 4
+                    // Phong-Lighting
+                    vec3 vLighting = ambientTerm + diffuseTerm + specularTerm;
+
                     gl_FragColor = vec4( vLighting, 1) * texture2D( uTexture, vTexCoord );
 // END AUFGABE 2 TEIL 4
                 }
