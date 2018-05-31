@@ -135,7 +135,7 @@
 // BEGIN AUFGABE 2 TEIL 3
                 varying vec2 vTexCoord;
                 //// It says uTexture down under, though... it seems to make no difference whatsoever
-                uniform sampler2D myTexture;
+                uniform sampler2D uTexture;
 // END AUFGABE 2 TEIL 3
 
                 void main(void) {
@@ -159,7 +159,7 @@
 
 
 // BEGIN AUFGABE 2 TEIL 4
-                    gl_FragColor = vec4( vLighting, 1) * texture2D( myTexture, vTexCoord );
+                    gl_FragColor = vec4( vLighting, 1) * texture2D( uTexture, vTexCoord );
 // END AUFGABE 2 TEIL 4
                 }
             `;
@@ -183,7 +183,7 @@
                   projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
                   modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
                   normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-                  uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+                  uTexture: gl.getUniformLocation(shaderProgram, 'uTexture'),
                   lightPos: gl.getUniformLocation(shaderProgram, 'uLightPos'),
                   lightColor: gl.getUniformLocation(shaderProgram, 'uLightColor'),
                   camPos: gl.getUniformLocation(shaderProgram, 'uCamPos'),
