@@ -134,12 +134,12 @@
                 varying vec3 vColor;
 // BEGIN AUFGABE 2 TEIL 3
                 varying vec2 vTexCoord;
+                //// It says uTexture down under, though... it seems to make no difference whatsoever
                 uniform sampler2D myTexture;
 // END AUFGABE 2 TEIL 3
 
                 void main(void) {
   
-                    vec4 texelColor = texture2D( myTexture, vTexCoord );
                     // ambient
                     vec3 ambientTerm = uCAmbient * uLightColor;
 
