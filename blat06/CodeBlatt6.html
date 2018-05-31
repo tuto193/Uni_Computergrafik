@@ -103,7 +103,7 @@
 
                 // Transform the values of the vertex and assign them to pass them on
                 vPosition = ( uModelViewMatrix * aVertexPosition ).xyz;
-                vNormal = ( uNormalMatrix * aVertexNormal ).xyz;
+                vNormal = normalize( ( uNormalMatrix * aVertexNormal ).xyw );
                 vColor = aVertexColor.xyz;
             }
 // END MUSTERLOESUNG AUFGABE 2b
