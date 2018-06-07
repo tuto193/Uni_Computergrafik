@@ -399,8 +399,6 @@
             }
 
             for( var i = 0; i < numVerts; i++ ) {
-                // ^ we do not need to do the calculations
-                // if we are at the edge
                 var ring = [];
                 var startHE = out[i];
                 var h = startHE;
@@ -439,8 +437,11 @@
                 var smoothX = ( thisVertex.x + midX ) / 2;
                 var smoothY = ( thisVertex.y + midY ) / 2;
                 var smoothZ = ( thisVertex.z + midZ ) / 2;
-
-                setPoint( i, new Point3D( smoothX, smoothY, smoothZ ) );
+                
+                // change this vertex' position, just if it is not one of the edge ones
+                if( !isBoundary( i ) ) {
+                    setPoint( i, new Point3D( smoothX, smoothY, smoothZ ) );
+                }
 
             }
 // END AUFGABE 2
