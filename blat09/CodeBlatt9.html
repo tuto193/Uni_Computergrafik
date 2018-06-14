@@ -296,7 +296,7 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
                         drawPoint( point2 );
                         var nLine = new Line3D( point1, point2 );
                         drawLine( nLine, coloMe );
-                        point1 = point1.mul(t);
+                        point1 = point1.mul(1 - t);
                         point2 =point2.mul(t);
                         // create the point based on Casteljau's algorithm
                         var addPoint = point1.add(point2);
@@ -328,11 +328,8 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
             points.push(p1);
             points.push(p2);
             points.push(p3);
-            for( var t = 0; t <=1; t += step ){
-
-                getPoint( points );
-
-                this.getPoint = function ( pointArray ) {
+            for( var t = 0; t <1; t += step ){
+                var getPoint = function getMorePoints( pointArray=[] ) {
                     // Set a new array to save the new points
                     var newPointsArray = [];
                     // choose a color based on the N depth
@@ -343,7 +340,7 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
                             var point1 = pointArray[ i ];
                             var point2 = pointArray[i + 1];
                             // Draw the second point after i
-                            point1 = point1.mul(t);
+                            point1 = point1.mul(1 - t);
                             point2 =point2.mul(t);
                             // create the point based on Casteljau's algorithm
                             var addPoint = point1.add(point2);
@@ -354,11 +351,13 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
                     // (if we were in the loop) should we
                     // actually carry on recursively iterating
                     if( newPointsArray.length > 1 ) {
-                        this.getPoint( newPointsArray );
-                    } else {
+                        getMorePoints( newPointsArray );
+                    } else if( newPointsArray.length == 1 ){
                         drawPoint( newPointsArray[0], coloMe );
                     }
                 }
+
+                getPoint( points );
             }
             
         }
