@@ -264,14 +264,104 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
         this.p3 = new Point3D(p3.x, p3.y, p3.z, p3.w);
 
 // BEGIN AUFGABE a
+            // An array of colours
+        var coloArray = ['#4286f4',
+                         '#cbe231',
+                         '#30ff60',
+                         '#ff230f'];
         this.drawFrame = function (t) {
+            var pArray = [];
+            pArray.push(p0);
+            pArray.push(p1);
+            pArray.push(p2);
+            pArray.push(p3);
 
-        }
+            // This function draws points and lines recursively
+            // until there is just one point to interpolate 
+            this.drawPoints = function ( pointArray ) {
+                // Set a new array to save the new points
+                var newPointsArray = [];
+                // choose a color based on the N depth
+                var coloMe = coloArray[ pointArray.length - 1];
+                // Draw the first point inside of the
+                // array before the loop
+                drawPoint( pointArray[ 0 ] );
+                // Only if the array has more than one point
+                // can we actually draw lines in between
+                if( pointArray.length > 1 ) {
+                    for( var i = 0; i < pointArray.length - 1; i++ ) {
+                        var point1 = pointArray[ i ];
+                        var point2 = pointArray[i + 1];
+                        // Draw the second point after i
+                        drawPoint( point2 );
+                        var nLine = new Line3D( point1, point2 );
+                        drawLine( nLine, coloMe );
+                        point1 = point1.mul(t);
+                        point2 =point2.mul(t);
+                        // create the point based on Casteljau's algorithm
+                        var addPoint = point1.add(point2);
+                        newPointsArray.push( addPoint );
+                    }
+                }
+                // Only if we actually added a new point
+                // (if we were in the loop) should we
+                // actually carry on recursively iterating
+                if( newPointsArray.length > 0 ) {
+                    this.drawPoints( newPointsArray );
+                } else {
+                    return newPointsArray[0];
+                }
+            }
+
+            this.drawPoints( pArray );
+
+            }
 // END AUFGABE a
 
 
 // BEGIN AUFGABE b
-       
+        this.drawCurve = function () {
+            var step = 0.002;
+            
+            var points = [];
+            points.push(p0);
+            points.push(p1);
+            points.push(p2);
+            points.push(p3);
+            for( var t = 0; t <=1; t += step ){
+
+                getPoint( points );
+
+                this.getPoint = function ( pointArray ) {
+                    // Set a new array to save the new points
+                    var newPointsArray = [];
+                    // choose a color based on the N depth
+                    var coloMe = coloArray[0];
+                    // Only if the array has more than one point
+                    if( pointArray.length > 1 ) {
+                        for( var i = 0; i < pointArray.length - 1; i++ ) {
+                            var point1 = pointArray[ i ];
+                            var point2 = pointArray[i + 1];
+                            // Draw the second point after i
+                            point1 = point1.mul(t);
+                            point2 =point2.mul(t);
+                            // create the point based on Casteljau's algorithm
+                            var addPoint = point1.add(point2);
+                            newPointsArray.push( addPoint );
+                        }
+                    }
+                    // Only if we actually added a new point
+                    // (if we were in the loop) should we
+                    // actually carry on recursively iterating
+                    if( newPointsArray.length > 1 ) {
+                        this.getPoint( newPointsArray );
+                    } else {
+                        drawPoint( newPointsArray[0], coloMe );
+                    }
+                }
+            }
+            
+        }
 // END AUFGABE b
     }
                 
@@ -370,6 +460,7 @@ Verschiebe Punkte : <input type="checkbox" id="movePoints" onclick="moveCheckBox
         }
         else {
             var curvesTrans = transformCurves(curvesarray);
+        }
 // BEGIN BONUSAUFGABE
          
 // END BONUSAUFGABE
