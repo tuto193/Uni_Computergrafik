@@ -399,50 +399,53 @@
             }
 
             for( var i = 0; i < numVerts; i++ ) {
-                var ring = [];
-                var startHE = out[i];
-                var h = startHE;
+                    var ring = [];
+                    var startHE = out[i];
+                    var h = startHE;
 
-                // The averaging of the coordinates that we will need
-                var newX = 0;
-                var newY = 0;
-                var newZ = 0;
-                
-                do {
-                    // The neighboring Vertex
-                    var nextVertex = to[h];
-                    ring.push( nextVertex );
-                    // the Opposite Half-Edge
-                    var hOpposite = opposite[ h ];
-                    // h becomes the next one in the loop
-                    h = next[ hOpposite ];
-                } while( startHE != h );
-                
-                // We iterate over our list of Vertices
-                // that are in our ring
-                for( var index = 0; index < ring.length; index++ ) {
-                    var ringPos = getPoint( ring[ index ] );
-                    newX += ringPos.x;
-                    newY += ringPos.y;
-                    newZ += ringPos.z;
-                }
+                    // The averaging of the coordinates that we will need
+                    var newX = 0;
+                    var newY = 0;
+                    var newZ = 0;
+                    
+                    do {
+                        // The neighboring Vertex
+                        var nextVertex = to[h];
+                        ring.push( nextVertex );
+                        // the Opposite Half-Edge
+                        var hOpposite = opposite[ h ];
+                        // h becomes the next one in the loop
+                        h = next[ hOpposite ];
+                    } while( startHE != h );
+                    
+                    // We iterate over our list of Vertices
+                    // that are in our ring
+                    for( var index = 0; index < ring.length; index++ ) {
+                        var ringPos = getPoint( ring[ index ] );
+                        newX += ringPos.x;
+                        newY += ringPos.y;
+                        newZ += ringPos.z;
+                    }
 
-                var thisVertex = getPoint( i );
+                    var thisVertex = getPoint( i );
 
-                // We average the coordinates
-                var midX = newX / ring.length;
-                var midY = newY / ring.length;
-                var midZ = newZ / ring.length;
-                // then we smoothen them
-                var smoothX = ( thisVertex.x + midX ) / 2;
-                var smoothY = ( thisVertex.y + midY ) / 2;
-                var smoothZ = ( thisVertex.z + midZ ) / 2;
-                
-                // change this vertex' position, just if it is not one of the edge ones
-                if( !isBoundary( i ) ) {
-                    setPoint( i, new Point3D( smoothX, smoothY, smoothZ ) );
-                }
+                    // We average the coordinates
+                    var midX = newX / ring.length;
+                    var midY = newY / ring.length;
+                    var midZ = newZ / ring.length;
+                    // then we smoothen them
+                    var smoothX = ( thisVertex.x + midX ) / 2;
+                    var smoothY = ( thisVertex.y + midY ) / 2;
+                    var smoothZ = ( thisVertex.z + midZ ) / 2;
 
+                    if( fixBoundary ) {
+                        if( !isBoundary(i) ) {
+                            setPoint( i, new Point3D( smoothX, smoothY, smoothZ ) );
+                        }
+                    } else {
+                            setPoint( i, new Point3D( smoothX, smoothY, smoothZ ) );
+                    }
+                    // change this vertex' position, just if it is not one of the edge ones
             }
 // END AUFGABE 2
         }
