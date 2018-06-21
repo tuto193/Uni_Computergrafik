@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;" 
+    onmousedown="mouse_action(event, 1)" onmouseup="mouse_action(event, -1)"
+    onmousemove="mouse_action(event, 0)">
+Your browser does not support the HTML5 canvas tag.</canvas><br>
+            Schatten: <input type="checkbox" id="shadowB" onclick="shadowBFunction()">
+
+    
+
+<script type="text/javascript">
+    const size = 700; // Size of canvas
+    const maxDepth = 3; // number of recursions
+    const testColor = new Color(230, 230, 230, 255); // testcolor with which canvas is filled
+    const backColor = new Color(0, 0, 0, 255); // background color for raycasting
+    const camPos = new Vector3D(0.5*size, 0.5*size, -0.8*size);
+        
+    var objects = [];
+    var lights = [];
+
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    var id = ctx.createImageData(size,size); 
+    var d  = id.data;                 
+    
+    var shadowing = false;
+    function shadowBFunction () {
+        var cB = document.getElementById("shadowB");
+        shadowing = cB.checked;
+    }
+
+    ///// Math Methods ///// 
+    function Vector3D (x=0, y=0, z=0)  {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        // matrix vector product
+        this.cross = function (v) {
+            var c = new Vector3D();
+            c.x = this.y * v.z - this.z * v.y;
+            c.y = this.z * v.x - this.x * v.z;
+            c.z = this.x * v.y - this.y * v.x;
+            return c;
+        }   
+
+        // normalize vector
+        this.normalize = function() {
+            var norm = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+            var v = new Vector3D(this.x/norm, this.y/norm, this.z/norm);
+            return v;
+        }
+        
+        this.length = function() {
+            var norm = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+            return norm;
+        }
+
+        // dot product
+        this.dot = function (v) {
+            return this.x * v.x + this.y * v.y + this.z * v.z;
+        }
+
+        // multiplication by scalar
+        this.mul = function (s) {
+            return new Vector3D(this.x * s, this.y * s, this.z * s);
+        }
+
+        // pointwise multiplication
+        this.mulPw = function (vIn) {
+            return new Vector3D(this.x * vIn.x, this.y * vIn.y, this.z * vIn.z);
+        }
+
+        // add
+        this.add = function (vIn) {
+            return new Vector3D(this.x + vIn.x, this.y + vIn.y, this.z + vIn.z);
+        }
+
+        // substract
+        this.sub = function (vIn) {
+            return new Vector3D(this.x - vIn.x, this.y - vIn.y, this.z - vIn.z);
+        }
+
+    }
+
+
+    ///// Helper Methods /////
+    function toHex(n) {
+        var hex = n.toString(16);
+        while (hex.length < 2) {hex = "0" + hex; }
+        return hex;
+    }
+
+
+    ///// Drawing Methods /////
+    // Draw point at x,y with given color 
+    function drawPoint (x, y, color = new Color(0, 0, 0, 255)) {
+        d[y*4*size+x*4+0]   = color.r;
+        d[y*4*size+x*4+1]   = color.g;
+        d[y*4*size+x*4+2]   = color.b;
+        d[y*4*size+x*4+3]   = color.a;   
+    }
+
+
+    function shader (normal, position, material) {
+        var vLighting = new Vector3D(0, 0, 0);
+        var vSpecular = new Vector3D(0, 0, 0);
+        for (var j = 0; j < lights.length; j++) {
+            var light = lights[j];
+            // positional
+            var positionalLightColor = light.c;
+            var positionalVector = light.p.sub(position).normalize();
+            var cPositional = light.i;
+            
+            var VisibilityFactor = 1.0;
+            if(shadowing)
+            {
+// BEGIN AUFGABE d
+
+// END AUFGABE d
+            }
+
+            var positional = Math.max(normal.dot(positionalVector), 0);
+            var positionalLight = positionalLightColor.toRgbVec().mul(positional).mul(cPositional);
+            vLighting = vLighting.add(positionalLight.mul(VisibilityFactor));
+
+            // specular
+            var specularLightColor = light.c;
+            var specularVector = light.p.sub(position).normalize();
+            var cSpecular = light.i;
+            var camVec = (position.sub(camPos)).normalize().mul(-1);
+            var h = specularVector.add(camVec).normalize();
+            var specular = normal.dot(h);
+            var specularLight = specularLightColor.toRgbVec().mul(Math.pow(specular, material.s)).mul(cSpecular);
+            vSpecular = vSpecular.add(specularLight.mul(VisibilityFactor));
+        }
+
+        var c =  material.c.toRgbVec().mulPw(vLighting);
+        return(c.add(vSpecular.mul(material.cSpec).mul(255)));
+    }
+
+
+    ///// Object Methods /////
+    function Color (r = 0, g = 0, b = 0, a = 0) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+
+        this.rgba = [this.r, this.g, this.b, this.a];
+        this.rgb = [this.r, this.g, this.b];
+        
+        this.toHexString = function () {
+            var r = toHex(this.r);
+            var g = toHex(this.g);
+            var b = toHex(this.b);
+            return "#" +  r + g + b;
+        }
+
+        this.toRgbVec = function () {
+            return new Vector3D(r, g, b);
+        }
+    }
+
+
+    function Material (color = new Color(), cSpec = 1, shine = 50.0, reflexion = 1.0) {
+        this.c = color;
+        this.s = shine;
+        this.r = reflexion;
+        this.cSpec = cSpec;
+    }
+
+
+    function Light (position = new Vector3D(), color = new Color(), intensity = 1.0) {
+        this.p = position;
+        this.c = color;
+        this.i = intensity;
+    }
+
+
+    function Sphere (center = new Vector3D(), radius = 0.2 * size , material = new Material()) {
+        this.c = center; 
+        this.r = radius;
+        this.m = material;
+
+        // check if sphere intersects with ray
+        this.intersect = function (ray, startPos) {
+            var dist = Infinity;
+            var pos;
+            var reflectionVec;
+
+            var oSubC = startPos.sub(this.c);
+            var lDotOC = ray.dot(oSubC);
+            var radicand = lDotOC * lDotOC - oSubC.dot(oSubC) + this.r*this.r;
+
+            if (radicand > 0) {
+                var root = Math.sqrt(radicand);
+                if ((-lDotOC - root) > 0) {
+                    dist = -lDotOC - root;
+                } else if ((-lDotOC + root) > 0) {
+                    dist = -lDotOC + root;
+                }
+            }
+
+            if (dist != Infinity) {
+                pos = startPos.add(ray.mul(dist));
+                var normal = (pos.sub(this.c)).normalize();
+                reflectionVec = ray.sub(normal.mul(2*normal.dot(ray))).normalize();
+            }
+
+            return [pos, dist, reflectionVec]
+        }
+
+        // intersect, compute color and reflection
+        this.getLighting = function (position) {
+            var normal = (position.sub(this.c)).normalize();
+            return shader(normal, position, this.m);
+        }
+    }
+
+// BEGIN AUFGABE b
+    function Plane( p1= new Vector3D(),p2=new Vector3D(),p3=new Vector3D(), material=new Material() ) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+        this.material = material;
+        this.normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) );
+
+        this.intersect = function( ray, startPos ){
+            ray = ray.normalize();
+            var distance = Infinity;
+            var intPoint = new Vector3D( 0, 0, 0 );
+            var reflected = new Vector3D( 0, 0, 0 );
+            // If the ray is parallel to the plane
+            // it wil never touch the plane
+            if( ray.dot( normalV ) <= 0 || ray.length() == 0 || normalX.length() == 0 ) {
+                return [distance, intPoint, reflected];
+            }
+            /*
+            A plane is define as: p1 = A
+            ax + by + cz - nA = 0
+            (a,b,c) the values of the normal of the Plane
+            a Gerade (ray) as:
+            (x,y,z) = startPos + r*(Richtungsvektor)
+            We replace (in Plane) the x, y and z values,
+            with all of the values of the Gerade (including its startPos')
+            then we solve r, we get
+            r = (n*A - n*startPos)/(n*Richtungsvektor)
+            */
+            var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
+
+            /*
+            We replace r in the Geradengleichung and
+            get our new Coordinates for the Schnittpunkt
+            */
+            intPoint = startPos.add( ray.mul( r ) );
+            /* since they are represented as vectors
+             the resulting distance is just the length of the vector that is the difference
+             between the startPos and the intVec */ 
+            var difVec = intPoint.sub( startPos );
+            distance = difVec.length;
+
+            // reflected = ray - 2nnTray
+            reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
+
+            return [ distance, intPoint, reflected];
+        }
+
+        this.getLighting = function( point ) {
+            return shader( normalV, point, this.material );
+        }
+    }
+// END AUFGABE b
+
+
+    ///// Tracing Methods /////
+    function getNearestIntersection (ray, startPos) {
+        var idx = -1;
+        var dist = Infinity;
+        var pos;
+        var r;
+        var epsilon = 0.00001;
+
+        for (var i = 0; i < objects.length; i++) {
+            var Intersection = objects[i].intersect(ray, startPos);
+            var iPos = Intersection[0]
+            var iDist = Intersection[1];
+            var iReflect = Intersection[2];
+            if (epsilon < iDist && iDist < dist) {
+                dist = iDist;
+                pos = iPos;
+                idx = i;
+                r = iReflect;
+            }
+        }
+
+        return [idx, pos, dist, r];
+    }
+
+
+    function traceRay (startPos, ray, depth = 1) {
+        var Intersection = getNearestIntersection(ray, startPos);
+        var iIndex = Intersection[0]; // index of nearest intersected object
+        var iPos = Intersection[1]; // position of nearest intersection
+        var iDist = Intersection[2]; // distance from startPos to nearest intersection
+        var iReflect = Intersection[3]; // ray reflected at iPos
+        
+        if (!(iIndex == -1)) {
+            var color = objects[iIndex].getLighting(iPos);
+
+// BEGIN AUFGABE  c
+            
+// END AUFGABE c
+
+            return new Color(color.x, color.y, color.z, 255); 
+        } else {
+            return backColor;
+       }
+    }
+
+    var pix = 0;
+    function trace() {
+   
+        for(var k = 0; k < 20000; k++)
+        {
+            var i = pix % size;
+            var j = (pix - i)/size;
+            
+// BEGIN AUFGABE a
+            // The coordinates of our pixel
+            var pixX = i - camPos.x;
+            var pixY = j - camPos.y;
+            var pixZ = 0 - camPos.z;
+
+            // We make a ray through that pixel
+            var pixRay = new Vector3D( pixX, pixY, pixZ );
+            pixRay = pixRay.normalize(); // It should be an Einheitsvektor
+            
+            // We get our color by tracing the rays
+            var pixColor = traceRay( camPos, pixRay );
+
+            drawPoint( i, j, pixColor );
+
+// END AUFGABE a
+            
+            pix = (pix+15486277)%(size*size);
+       }
+        
+       ctx.putImageData(id, 0, 0); 
+       requestAnimationFrame(trace);
+    }
+
+    function traceScene () {
+        ctx.fillStyle=testColor.toHexString();
+        ctx.fillRect(0, 0, size, size);
+        trace();
+    }
+
+
+    ///// Init /////
+    // Spheres
+    var mat0 = new Material(new Color(255, 255, 200, 255), 1, 50, 0.4);
+    var mat1 = new Material(new Color(255, 200, 255, 255), 1, 50, 0.5);
+    var mat2 = new Material(new Color(200, 255, 255, 255), 0.5, 30, 0.25);
+    var mat3 = new Material(new Color(170, 200, 255, 255), 0.3, 10, 0.1);
+
+    objects.push(new Sphere(new Vector3D(0.7*size, 0.6*size, -0.1*size), 0.13*size, mat0));
+    objects.push(new Sphere(new Vector3D(0.3*size, 0.6*size, 0.0*size), 0.13*size, mat1));
+    objects.push(new Sphere(new Vector3D(0.5*size, 0.2*size, 0.1*size), 0.18*size, mat2));
+    objects.push(new Sphere(new Vector3D(0.5*size, 0.8*size, -0.2*size), 0.11*size, mat3));
+
+    // Planes
+    var white = new Color(255, 255, 255, 255);
+    var mat4 = new Material(white, 0.0, 50, 0.2);
+    //objects.push(new Plane(new Vector3D(0, 1, 0.8*size), new Vector3D(1, 1, 0.8*size), new Vector3D(1, 0, 0.8*size), mat4)); 
+
+    // Lights    
+    lights.push(new Light(new Vector3D(0.0, 0.0, -1*size),
+                          new Color(1.0, 1.0,  0.9, 1), 0.4));
+    lights.push(new Light(new Vector3D(2*size, 0.0, -1*size),
+                          new Color(0.9, 0.9, 1.0, 1), 0.4));
+    lights.push(new Light(new Vector3D(0.5*size, 2*size, -2*size),
+                          new Color(1.0, 1.0, 0.9, 1), 0.3));
+
+
+    
+    //set correct sizes 
+    function setSizes () {
+        document.getElementById("myCanvas").setAttribute("width", size); 
+        document.getElementById("myCanvas").setAttribute("height", size); 
+    }
+
+
+    ///// Mouse Methods /////
+    var nearestDist;
+    var nearesIdx;
+    var mouseDown = false;
+    function mouse_action(event, clicked) {
+        if (clicked == 1) {
+            mouseDown = true;
+            mouseXOld = event.clientX;
+            mouseYOld = event.clientY;
+
+            // find nearest object
+            var nearestDist = Infinity;
+            for (var i = 0; i < objects.length; i++) {
+                var c = objects[i].c;
+                var dist = (c.x - mouseXOld) * (c.x - mouseXOld) + 
+                           (c.y - mouseYOld) * (c.y - mouseYOld);
+
+                if (dist < nearestDist) {
+                    nearestDist = dist;
+                    nearestIdx = i;
+                }
+            }
+        } else if ( clicked == -1) {
+            mouseDown = false;
+        }
+
+        if (mouseDown) {
+            var mouseX = event.clientX;
+            var mouseY = event.clientY;
+            // check if mouse movement is at least one pixel of canvas
+            if ((mouseX != mouseXOld) || (mouseY != mouseYOld)) {
+                var x1 = mouseXOld; 
+                var y1 = mouseYOld;
+                var x2 = mouseX;
+                var y2 = mouseY;
+
+                // move nearest object
+                var deltaX = mouseX - mouseXOld;
+                var deltaY = mouseY - mouseYOld;
+
+                objects[nearestIdx].c.x += deltaX;
+                objects[nearestIdx].c.y += deltaY;
+
+               // traceScene();
+                mouseXOld = mouseX;
+                mouseYOld = mouseY;
+            }
+        }
+    }
+
+    setSizes();
+    traceScene();
+</script> 
+
+</body>
+</html>
