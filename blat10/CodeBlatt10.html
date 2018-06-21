@@ -239,7 +239,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
             // If the ray is parallel to the plane
             // it wil never touch the plane
             if( ray.dot( normalV ) <= 0 || ray.length() == 0 || normalX.length() == 0 ) {
-                return [distance, intPoint, reflected];
+                return [intPoint, distance, reflected];
             }
             /*
             A plane is define as: p1 = A
@@ -268,7 +268,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
             // reflected = ray - 2nnTray
             reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
 
-            return [ distance, intPoint, reflected];
+            return [ intPoint, distance, reflected];
         }
 
         this.getLighting = function( point ) {
@@ -314,7 +314,13 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
             var color = objects[iIndex].getLighting(iPos);
 
 // BEGIN AUFGABE  c
-            
+        // Surface Normal at p
+        /* The sum of ray and iRef is parallel to the surface, and their cross product as well. witht that, we can get the normal of the surface at that point */
+        var sNormal = ray.add( iReflect ).cross( ray.cross( iReflect ) );
+        // var refractionDirection = (?);
+        var Cdirect = getLighting( iPos );
+        var Creflect = r * traceRay( iPos, iReflect );
+        // var Crefract = refract * trace( iPos, refractionDirection );
 // END AUFGABE c
 
             return new Color(color.x, color.y, color.z, 255); 
