@@ -231,7 +231,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
         this.m = material;
 
         this.intersect = function( ray, startPos ){
-            ray = ray.normalize();
+            //ray = ray.normalize();
             var normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) ).normalize();
             var distance = Infinity;
             var intPoint = new Vector3D( 0, 0, 0 );
