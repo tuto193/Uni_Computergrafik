@@ -229,10 +229,10 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
         this.p2 = p2;
         this.p3 = p3;
         this.m = material;
+        var normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) ).normalize();
 
         this.intersect = function( ray, startPos ){
-            //ray = ray.normalize();
-            var normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) ).normalize();
+            ray = ray.normalize();
             var distance = Infinity;
             var intPoint = new Vector3D( 0, 0, 0 );
             var reflected = new Vector3D( 0, 0, 0 );
@@ -252,7 +252,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
                 var check = normalV.dot( startPos ) -  normalV.dot( p1 );
                 if( check >= 0 ) {
                     distance = check;
-                    var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
+                    var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normalV.dot( ray ) );
 
                     /*
                     We replace r in the Geradengleichung and
@@ -269,7 +269,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
         }
 
         this.getLighting = function( point ) {
-            return shader( normalV, point, this.material );
+            return shader( normalV, point, this.m );
         }
     }
 // END AUFGABE b
@@ -384,7 +384,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
     // Planes
     var white = new Color(255, 255, 255, 255);
     var mat4 = new Material(white, 0.0, 50, 0.2);
-    //objects.push(new Plane(new Vector3D(0, 1, 0.8*size), new Vector3D(1, 1, 0.8*size), new Vector3D(1, 0, 0.8*size), mat4)); 
+    objects.push(new Plane(new Vector3D(0, 1, 0.8*size), new Vector3D(1, 1, 0.8*size), new Vector3D(1, 0, 0.8*size), mat4)); 
 
     // Lights    
     lights.push(new Light(new Vector3D(0.0, 0.0, -1*size),
