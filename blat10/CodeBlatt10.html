@@ -229,46 +229,42 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
         this.p2 = p2;
         this.p3 = p3;
         this.m = material;
-        this.normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) );
 
         this.intersect = function( ray, startPos ){
             ray = ray.normalize();
+            var normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) ).normalize();
             var distance = Infinity;
             var intPoint = new Vector3D( 0, 0, 0 );
             var reflected = new Vector3D( 0, 0, 0 );
-            // If the ray is parallel to the plane
-            // it wil never touch the plane
-            if( ray.dot( normalV ) <= 0 || ray.length() == 0 || normalX.length() == 0 ) {
-                return [intPoint, distance, reflected];
-            }
-            /*
-            A plane is define as: 
-            ax + by + cz - nA = 0
-            p1 = A, (a,b,c) the values of the normal of the Plane
-            a Gerade (ray) as:
-            (x,y,z) = startPos + r*(Richtungsvektor)
-            We replace (in Plane) the x, y and z values,
-            with all of the values of the Gerade (including its startPos')
-            then we solve r, we get
-            r = (n*A - n*startPos)/(n*Richtungsvektor)
-            */
-            var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
+            // If the ray is parallel to the plane it wil never touch the plane
+                if( ray.dot( normalV ) != 0 ) {
+                /*
+                A plane is define as (Hesseschenormalenform): 
+                n0 - n0*p1 = 0
+                p1 = A, (a,b,c) the values of the normal of the Plane
+                a Gerade (ray) as:
+                (x,y,z) = startPos + r*(Richtungsvektor)
+                We replace (in Plane) the x, y and z values,
+                with all of the values of the Gerade (including its startPos')
+                then we solve r, we get
+                r = (n*A - n*startPos)/(n*Richtungsvektor)
+                */
+                var check = normalV.dot( startPos ) -  normalV.dot( p1 );
+                if( check >= 0 ) {
+                    distance = check;
+                }
+                var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
 
-            /*
-            We replace r in the Geradengleichung and
-            get our new Coordinates for the Schnittpunkt
-            */
-            intPoint = startPos.add( ray.mul( r ) );
-            /* since they are represented as vectors
-             the resulting distance is just the length of the vector that is the difference
-             between the startPos and the intVec */ 
-            var difVec = intPoint.sub( startPos );
-            distance = difVec.length;
+                /*
+                We replace r in the Geradengleichung and
+                get our new Coordinates for the Schnittpunkt
+                */
+                intPoint = startPos.add( ray.mul( r ) );
 
-            // reflected = ray - 2nnTray
-            reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
-
-            return [ intPoint, distance, reflected];
+                // reflected = ray - 2nnTray
+                reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
+                } 
+                return [ intPoint, distance, reflected];
         }
 
         this.getLighting = function( point ) {
@@ -316,12 +312,13 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
 // BEGIN AUFGABE  c
             // first we make it finite
             if( maxDepth - depth >= 0 ) {
+                var matReflectance = objects[iIndex].m.r;
                 // Surface Normal at p
                 /* The sum of ray and iRef is parallel to the surface, and their cross product as well. witht that, we can get the normal of the surface at that point */
                 var sNormal = ray.add( iReflect ).cross( ray.cross( iReflect ) );
                 // var refractionDirection = (?);
                 // var Cdirect = getLighting( iPos );
-                var Creflect = traceRay( iPos, iReflect, ++depth ).toRgbVec().mul( objects[iIndex].m.r );
+                var Creflect = this( iPos, iReflect, ++depth ).toRgbVec().mul( matReflectance );
                 // var Crefract = refract * trace( iPos, refractionDirection );
                 color = color.add( Creflect );
     // END AUFGABE c
