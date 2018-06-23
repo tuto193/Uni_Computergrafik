@@ -121,7 +121,13 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
             if(shadowing)
             {
 // BEGIN AUFGABE d
-
+                // We need to trace our ray, and if it intersects a body, it gets
+                // 0 visibility
+                var checks = getNearestIntersection( positionalVector, position );
+                if( checks[0] != -1 ) {
+                    // for each light that doesn't touch the point
+                    VisibilityFactor -= 1/lights.length;
+                }
 // END AUFGABE d
             }
 
