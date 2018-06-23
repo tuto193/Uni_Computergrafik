@@ -228,7 +228,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
         this.p1 = p1;
         this.p2 = p2;
         this.p3 = p3;
-        this.material = material;
+        this.m = material;
         this.normalV = ( this.p2.sub( this.p1 ) ).cross( this.p3.sub( this.p1 ) );
 
         this.intersect = function( ray, startPos ){
@@ -242,9 +242,9 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
                 return [intPoint, distance, reflected];
             }
             /*
-            A plane is define as: p1 = A
+            A plane is define as: 
             ax + by + cz - nA = 0
-            (a,b,c) the values of the normal of the Plane
+            p1 = A, (a,b,c) the values of the normal of the Plane
             a Gerade (ray) as:
             (x,y,z) = startPos + r*(Richtungsvektor)
             We replace (in Plane) the x, y and z values,
@@ -315,14 +315,13 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
 
 // BEGIN AUFGABE  c
             // first we make it finite
-            depth++;
             if( maxDepth - depth >= 0 ) {
                 // Surface Normal at p
                 /* The sum of ray and iRef is parallel to the surface, and their cross product as well. witht that, we can get the normal of the surface at that point */
                 var sNormal = ray.add( iReflect ).cross( ray.cross( iReflect ) );
                 // var refractionDirection = (?);
                 // var Cdirect = getLighting( iPos );
-                var Creflect = traceRay( iPos, iReflect, depth ).toRgbVec().mul( r );
+                var Creflect = traceRay( iPos, iReflect, ++depth ).toRgbVec().mul( objects[iIndex].m.r );
                 // var Crefract = refract * trace( iPos, refractionDirection );
                 color = color.add( Creflect );
     // END AUFGABE c
