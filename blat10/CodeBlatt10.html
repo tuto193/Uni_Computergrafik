@@ -237,7 +237,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
             var intPoint = new Vector3D( 0, 0, 0 );
             var reflected = new Vector3D( 0, 0, 0 );
             // If the ray is parallel to the plane it wil never touch the plane
-                if( ray.dot( normalV ) != 0 ) {
+            if( ray.dot( normalV ) != 0 ) {
                 /*
                 A plane is define as (Hesseschenormalenform): 
                 n0 - n0*p1 = 0
@@ -252,19 +252,20 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
                 var check = normalV.dot( startPos ) -  normalV.dot( p1 );
                 if( check >= 0 ) {
                     distance = check;
+                    var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
+
+                    /*
+                    We replace r in the Geradengleichung and
+                    get our new Coordinates for the Schnittpunkt
+                    */
+                    intPoint = startPos.add( ray.mul( r ) );
+
+                    // reflected = ray - 2nnTray
+                    reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
                 }
-                var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normal.dot( ray ) );
 
-                /*
-                We replace r in the Geradengleichung and
-                get our new Coordinates for the Schnittpunkt
-                */
-                intPoint = startPos.add( ray.mul( r ) );
-
-                // reflected = ray - 2nnTray
-                reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
-                } 
-                return [ intPoint, distance, reflected];
+            } 
+            return [ intPoint, distance, reflected];
         }
 
         this.getLighting = function( point ) {
@@ -318,13 +319,12 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
                 var sNormal = ray.add( iReflect ).cross( ray.cross( iReflect ) );
                 // var refractionDirection = (?);
                 // var Cdirect = getLighting( iPos );
-                var Creflect = this( iPos, iReflect, ++depth ).toRgbVec().mul( matReflectance );
+                var Creflect = traceRay( iPos, iReflect, ++depth ).toRgbVec().mul( matReflectance );
                 // var Crefract = refract * trace( iPos, refractionDirection );
                 color = color.add( Creflect );
-    // END AUFGABE c
-
-                return new Color(color.x, color.y, color.z, 255); 
             }
+    // END AUFGABE c
+            return new Color(color.x, color.y, color.z, 255); 
         } else {
             return backColor;
         }
