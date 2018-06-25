@@ -257,19 +257,17 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
                 */
                 var check = normalV.dot( startPos ) -  normalV.dot( p1 );
                 if( check >= 0 ) {
-                    distance = check;
                     var r = ( (normalV.dot( p1 )) - (normalV.dot( startPos )) ) / ( normalV.dot( ray ) );
-
+                    distance = check;
                     /*
                     We replace r in the Geradengleichung and
-                    get our new Coordinates for the Schnittpunkt
+                    get our new Coordinates for the Schnittpunkt 
+                    IF r is a positive number
                     */
                     intPoint = startPos.add( ray.mul( r ) );
-
                     // reflected = ray - 2nnTray
                     reflected = ray.sub( normalV.mul( 2 ).mul( normalV.dot( ray ) ) );
                 }
-
             } 
             return [ intPoint, distance, reflected];
         }
